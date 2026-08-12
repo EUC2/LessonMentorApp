@@ -145,6 +145,22 @@ const protectedAssetLibrary = [
 
 const standardsLibrary = [
   {
+    id: "NGSS.SEP.3-5.MEASUREMENT",
+    framework: "NGSS Science Practice",
+    grade: "4",
+    subject: "science",
+    keywords: ["metric", "measurement", "measure", "mass", "balance", "grams", "meter", "centimeter", "data", "tools"],
+    text: "Make observations and/or measurements to produce data that can be used as evidence in an investigation."
+  },
+  {
+    id: "CCSS.MATH.CONTENT.4.MD.A.1",
+    framework: "Common Core Math Connection",
+    grade: "4",
+    subject: "science",
+    keywords: ["metric", "measurement", "measure", "meter", "centimeter", "gram", "kilogram", "unit", "convert"],
+    text: "Know relative sizes of measurement units within one system of units and use those units to solve measurement problems."
+  },
+  {
     id: "4-ESS2-1",
     framework: "NGSS",
     grade: "4",
@@ -1128,6 +1144,19 @@ function buildObjectiveStatement() {
 
 function inferLessonContext(text = getAnalyzableLessonText()) {
   const lower = String(text || "").toLowerCase();
+  if (/metric|measurement|balance|grams?|kilograms?|centimeters?|meters?/.test(lower)) {
+    return {
+      topic: "metric measurement exploration",
+      objective: "identify common metric tools and use a balance or hand lens to measure, compare, and describe objects accurately",
+      language: "metric system, measure, mass, gram, centimeter, balance, hand lens, observe, compare, record",
+      hook: "Display a balance, hand lens, ruler, and small classroom objects. Ask: Which tool helps us measure how heavy something is? Which tool helps us look closely? Which unit would scientists use?",
+      directTeach: "Model one complete measurement routine: choose the tool, name the unit, measure carefully, record the number and unit together, then say one observation using science language.",
+      guidedPractice: "Students rotate through a teacher-led sample station with a partner. They measure one object with a balance, observe it with a hand lens, and record a complete measurement sentence before moving on.",
+      independentPractice: "Students complete a Metric Measurement Lab Sheet with three objects. For each object, they record a sketch, mass in grams, one close observation, and a comparison sentence.",
+      assessment: "Collect the lab sheet and listen for students using the unit with the number. Students should show that metric tools help scientists describe objects precisely.",
+      grouping: "Whole group tool introduction, partner measurement practice, then small-group stations with independent recording."
+    };
+  }
   if (/soccer|kicking a ball|kick a ball/.test(lower)) {
     return {
       topic: "introductory soccer skills",
@@ -1209,8 +1238,11 @@ function titleFromPrompt(text = "") {
     .replace(/^[\s"'`]+|[\s"'`]+$/g, "")
     .trim();
   const lower = compact.toLowerCase();
+  if (/metric|measurement|balance|grams?|kilograms?|centimeters?|meters?/.test(lower)) {
+    return "Metric Measurement Lab Lesson Plan";
+  }
   if (/soccer|kicking a ball|kick a ball/.test(lower)) {
-    return "Introductory Soccer Unit: Background Knowledge And Kicking Basics Lesson Plan";
+    return "Introductory Soccer Skills Lesson Plan";
   }
   if (/historical figure|research project/.test(lower)) {
     return "Historical Figure Research Project Lesson Plan";
@@ -1219,13 +1251,15 @@ function titleFromPrompt(text = "") {
     return "Erosion And Landform Change Lesson Plan";
   }
   const cleaned = compact
-    .replace(/^(i'?m|i am)\s+looking\s+for\s+(an?|the)?\s*/i, "")
+    .replace(/^(i'?d|i would|i'?m|i am)\s+(like|looking|need|want)\s+(for\s+)?(an?|the)?\s*/i, "")
     .replace(/^please\s+(create|make|build|generate)\s+(an?|the)?\s*/i, "")
-    .replace(/^i\s+need\s+(an?|the)?\s*/i, "")
+    .replace(/^a\s+lesson\s+plan\s+that\s+/i, "")
+    .replace(/^lesson\s+plan\s+that\s+/i, "")
     .split(/[.;!?]/)[0]
-    .slice(0, 90)
+    .replace(/\bthat\s+(introduces|uses|includes)\b/gi, "$1")
     .trim();
-  return `${titleCase(cleaned || "Generated Lesson")} Lesson Plan`;
+  const words = cleaned.split(/\s+/).filter(Boolean).slice(0, 7).join(" ");
+  return `${titleCase(words || "Generated Lesson")} Lesson Plan`;
 }
 
 function deriveLessonTitle() {
@@ -1427,7 +1461,9 @@ async function launchAssessment(scope) {
 function selectOrganizers() {
   const subject = document.getElementById("lesson-subject")?.value || "science";
   const sourceText = getAnalyzableLessonText().toLowerCase();
-  const scienceSet = ["KWL.png", "Word Web.pdf", "Drawing Conclusions.pdf", "What I learned today.pdf", "Blank 4-Column Topic Grid.pdf"];
+  const scienceSet = /metric|measurement|balance|grams?|centimeters?|hand lens/.test(sourceText)
+    ? ["Metric Measurement Lab Sheet", "Tool And Unit Match Cards", "Mass Comparison Recording Table", "Hand Lens Observation Sketch Box", "Teacher Completed Sample Lab Sheet"]
+    : ["KWL.png", "Word Web.pdf", "Drawing Conclusions.pdf", "What I learned today.pdf", "Blank 4-Column Topic Grid.pdf"];
   const elaSet = ["Story Elements.png", "Character Setting Plot.pdf", "Essay Map.pdf", "Evidence of Theme.pdf", "Summarize.png"];
   const mathSet = ["Blank Grid.pdf", "Problem Solution Organizer.pdf", "Blank 4 rows.pdf", "Pro-Con.png"];
   const socialSet = /historical|figure|research/.test(sourceText)
@@ -1435,6 +1471,37 @@ function selectOrganizers() {
     : ["Timeline.pdf", "Document Analysis.pdf", "Compare and Contrast.png", "Event Details.pdf"];
   const generalSet = ["What I learned today.pdf", "KWL.png", "Word Web.pdf", "Blank Grid.pdf"];
   return ({ science: scienceSet, ela: elaSet, math: mathSet, "social-studies": socialSet }[subject] || generalSet).slice(0, 5);
+}
+
+function getStudentMaterialsPacket(item) {
+  const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
+  const topic = String(context.topic || "").toLowerCase();
+  const organizers = item.organizers?.length ? item.organizers : selectOrganizers();
+  if (/metric measurement/.test(topic)) {
+    return [
+      { title: "Metric Measurement Lab Sheet", purpose: "Student recording page for station work", details: "Columns: object name, sketch/close observation, mass in grams, measurement tool used, and comparison sentence." },
+      { title: "Tool And Unit Match Cards", purpose: "Quick background-building sort", details: "Students match balance, ruler, meter stick, and hand lens to gram, centimeter, meter, and observation language." },
+      { title: "Teacher Completed Sample Lab Sheet", purpose: "Model and reference", details: "One completed sample row showing number + unit, observation sentence, and comparison sentence." }
+    ];
+  }
+  if (/historical figure|research/.test(topic)) {
+    return [
+      { title: "Historical Figure Research Organizer", purpose: "Student research organizer", details: "Sections for key facts, source details, contribution/impact, and one question for more research." },
+      { title: "Fact-Evidence-Impact Sorting Sheet", purpose: "Guided practice worksheet", details: "Students sort details into Facts About The Person, Evidence From The Source, and Why It Matters." },
+      { title: "Completed Organizer Sample", purpose: "Teacher/student model", details: "One completed sample row so students can see the expected level of detail." }
+    ];
+  }
+  return organizers.slice(0, 4).map(title => ({
+    title,
+    purpose: "Student support attachment",
+    details: "Attach this organizer or worksheet where it directly supports the lesson task and selected class profile."
+  }));
+}
+
+function formatMaterialsPacketText(item) {
+  return getStudentMaterialsPacket(item)
+    .map(material => `${material.title}: ${material.purpose}. ${material.details}`)
+    .join("\n");
 }
 
 function getDaysAvailable(item) {
@@ -1536,6 +1603,7 @@ function buildGeneratedLessonLines(item) {
     ? item.supportInserts.map(support => `${support.insert} (${support.label})`)
     : ["Class IEP supports will be inserted here after the full generator is connected."];
   const organizers = item.organizers?.length ? item.organizers.join(", ") : "Organizer recommendations will appear here.";
+  const materialsPacket = formatMaterialsPacketText(item);
   const files = item.uploadedFiles?.length ? item.uploadedFiles.map(file => file.name).join(", ") : "No uploaded file recorded.";
   return [
     "Lesson Mentor Generated Draft",
@@ -1566,8 +1634,11 @@ function buildGeneratedLessonLines(item) {
     "Strategy Integrations/IEP",
     ...supports.map(support => `- ${support}`),
     "",
-    "Recommended Graphic Organizers",
+    "Recommended Graphic Organizers And Worksheets",
     organizers,
+    "",
+    "Attached Student Materials Packet",
+    materialsPacket,
     "",
     "Lesson-Specific Teaching Flow",
     `- Background Builder: ${context.hook}`,
@@ -1576,9 +1647,7 @@ function buildGeneratedLessonLines(item) {
     `- Independent/Station Practice: ${context.independentPractice}`,
     `- Evidence Of Learning: ${context.assessment}`,
     "",
-    "Prototype Note",
-    "This static preview uses the selected class, subject, filename, pasted text, and strategy settings. The full build will replace this draft with AI-generated content in the Lesson Mentor signature template.",
-    "",
+
     copyrightNotice
   ];
 }
@@ -1638,22 +1707,57 @@ function previewGeneratedLesson(item) {
     modal.className = "modal dashboard-modal generated-preview-modal";
     modal.innerHTML = `
       <form method="dialog">
-        <div class="panel-title-row">
-          <h3 id="generated-preview-title">Generated Lesson Preview</h3>
+        <div class="panel-title-row preview-modal-head">
+          <div>
+            <p class="eyebrow">Lesson Mentor PDF Preview</p>
+            <h3 id="generated-preview-title">Generated Lesson Preview</h3>
+          </div>
           <button class="icon-button" value="close">Close</button>
         </div>
         <div class="generated-preview-body" id="generated-preview-body"></div>
       </form>
     `;
+    modal.addEventListener("close", () => {
+      if (modal.dataset.previewUrl) URL.revokeObjectURL(modal.dataset.previewUrl);
+      modal.dataset.previewUrl = "";
+    });
     document.body.appendChild(modal);
   }
+  if (modal.dataset.previewUrl) URL.revokeObjectURL(modal.dataset.previewUrl);
+  const pdfUrl = URL.createObjectURL(makeLessonPlanPdf(item));
+  modal.dataset.previewUrl = pdfUrl;
   document.getElementById("generated-preview-title").textContent = item.title;
+  const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
+  const packet = getStudentMaterialsPacket(item);
+  const packetHtml = packet.map(material => `
+    <article>
+      <strong>${escapeHtml(material.title)}</strong>
+      <span>${escapeHtml(material.purpose)}</span>
+      <p>${escapeHtml(material.details)}</p>
+    </article>
+  `).join("");
   document.getElementById("generated-preview-body").innerHTML = `
-    <div class="analysis-card">
-      <strong>Draft Preview</strong>
-      <p>Full AI/template generation is still a backend build item. This preview reflects the selected class, subject, filename/pasted text, strategies, and settings.</p>
+    <div class="preview-summary-grid">
+      <div class="preview-summary-card">
+        <span>Lesson Focus</span>
+        <strong>${escapeHtml(titleCase(context.topic))}</strong>
+      </div>
+      <div class="preview-summary-card">
+        <span>Student Materials</span>
+        <strong>${packet.length} Attachments Included</strong>
+      </div>
+      <div class="preview-summary-card">
+        <span>Standards</span>
+        <strong>${escapeHtml(item.standards?.map(standard => standard.id).join(", ") || "Standards Matched")}</strong>
+      </div>
     </div>
-    <pre>${escapeHtml(buildGeneratedLessonLines(item).join("\n"))}</pre>
+    <div class="pdf-preview-frame">
+      <iframe title="${escapeHtml(item.title)} PDF preview" src="${pdfUrl}"></iframe>
+    </div>
+    <section class="attachment-preview-panel">
+      <h4>Attached Student Materials Packet</h4>
+      <div class="attachment-preview-grid">${packetHtml}</div>
+    </section>
   `;
   modal.showModal();
 }
@@ -1667,7 +1771,7 @@ function downloadGeneratedDocx(item) {
   const xmlLines = buildGeneratedLessonLines(item).map(line => {
     const escaped = escapeXml(line || " ");
     if (!line) return `<w:p/>`;
-    const isHeading = !line.startsWith("-") && ["Lesson Mentor Generated Draft", item.title, "Auto Standards", "Teacher-Ready Standard Expectation", "Board Language", "Strategies To Include", "Strategy Integrations/IEP", "Recommended Graphic Organizers", "Lesson-Specific Teaching Flow", "Prototype Note"].includes(line);
+    const isHeading = !line.startsWith("-") && ["Lesson Mentor Generated Draft", item.title, "Auto Standards", "Teacher-Ready Standard Expectation", "Board Language", "Strategies To Include", "Strategy Integrations/IEP", "Recommended Graphic Organizers And Worksheets", "Attached Student Materials Packet", "Lesson-Specific Teaching Flow"].includes(line);
     const isCopyright = line === copyrightNotice;
     return `<w:p><w:r><w:rPr>${isHeading ? "<w:b/>" : ""}${isCopyright ? '<w:color w:val="8A94A6"/><w:sz w:val="16"/>' : ""}</w:rPr><w:t xml:space="preserve">${escaped}</w:t></w:r></w:p>`;
   }).join("");
@@ -1701,8 +1805,8 @@ function makeLessonPlanPdf(item) {
   const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
   const keywords = context.language || (item.keywords?.length ? item.keywords.slice(0, 8).join(", ") : "academic vocabulary from uploaded lesson");
   const materials = [
-    item.uploadedFiles?.length ? item.uploadedFiles.map(file => file.name).join(", ") : "Uploaded lesson materials",
-    item.organizers?.length ? `Organizers: ${item.organizers.join(", ")}` : ""
+    item.uploadedFiles?.length ? item.uploadedFiles.map(file => file.name).join(", ") : "Pasted lesson prompt/materials",
+    item.organizers?.length ? `Organizers/worksheets: ${item.organizers.join(", ")}` : ""
   ].filter(Boolean).join("; ");
 
   pdf.addPage();
@@ -1746,12 +1850,27 @@ function makeLessonPlanPdf(item) {
     ["Grouping Used Today", buildGroupingText(item)],
     ["Assessment Evidence - What Will You Collect Or Observe To Know Students Learned It?", buildAssessmentEvidenceText(item)],
     ["Differentiation Notes", buildDifferentiationText(item)],
-    ["Reflection (Complete After Teaching)", "What worked? Which students still need another access point? What should be adjusted before teaching this lesson again?"]
+    ["Attached Student Materials", formatMaterialsPacketText(item)]
   ];
   let y = 70;
   footerSections.forEach(([title, body]) => {
     drawBox(pdf, margin, y, contentWidth, 105, { title, body, accent, border, fill: "FFFFFF" });
     y += 122;
+  });
+  pdf.text(copyrightNotice, margin, 584, { size: 6.8, color: watermark });
+
+  pdf.addPage();
+  pdf.text("Student Materials Packet", margin, 30, { size: 16, bold: true, color: accent });
+  pdf.text(item.title || "Generated Lesson Plan", margin, 47, { size: 9, color: muted });
+  getStudentMaterialsPacket(item).forEach((material, index) => {
+    const top = 72 + index * 108;
+    drawBox(pdf, margin, top, contentWidth, 88, {
+      title: material.title,
+      body: `${material.purpose}. ${material.details}`,
+      accent,
+      border,
+      fill: index % 2 ? "FFFFFF" : lightAccent
+    });
   });
   pdf.text(copyrightNotice, margin, 584, { size: 6.8, color: watermark });
 

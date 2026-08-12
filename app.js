@@ -58,7 +58,7 @@ const iepSupports = [
     id: "sentence-frames",
     label: "Sentence frames",
     description: "Ready-to-use writing and speaking frames.",
-    insert: "Before the CER response, give students two frame choices: \"My claim is ___ because ___\" or \"The evidence shows ___, so I think ___.\""
+    insert: "Before the written response, give students two frame choices: \"My idea is ___ because ___\" or \"The source detail shows ___, so I think ___.\""
   },
   {
     id: "chunked-directions",
@@ -207,6 +207,46 @@ const standardsLibrary = [
     subject: "math",
     keywords: ["area", "perimeter", "formula", "rectangle", "measurement"],
     text: "Apply the area and perimeter formulas for rectangles in real-world and mathematical problems."
+  },
+  {
+    id: "CCSS.ELA-LITERACY.RI.5.1",
+    framework: "Common Core",
+    grade: "5",
+    subject: "social-studies",
+    keywords: ["historical", "figure", "research", "evidence", "source", "details", "quote", "text"],
+    text: "Quote accurately from a text when explaining what the text says explicitly and when drawing inferences from the text."
+  },
+  {
+    id: "CCSS.ELA-LITERACY.W.5.7",
+    framework: "Common Core",
+    grade: "5",
+    subject: "social-studies",
+    keywords: ["historical", "figure", "research", "project", "sources", "question", "investigate"],
+    text: "Conduct short research projects that use several sources to build knowledge through investigation of different aspects of a topic."
+  },
+  {
+    id: "CCSS.ELA-LITERACY.W.5.8",
+    framework: "Common Core",
+    grade: "5",
+    subject: "social-studies",
+    keywords: ["notes", "sources", "evidence", "paraphrase", "bibliography", "research"],
+    text: "Recall relevant information from experiences or gather relevant information from print and digital sources; summarize or paraphrase information in notes and finished work."
+  },
+  {
+    id: "SHAPE.MS.1",
+    framework: "SHAPE America",
+    grade: "6",
+    subject: "pe",
+    keywords: ["soccer", "kick", "kicking", "ball", "pass", "control", "dribble", "movement"],
+    text: "Demonstrate competency in motor skills and movement patterns needed to perform a variety of physical activities."
+  },
+  {
+    id: "SHAPE.MS.2",
+    framework: "SHAPE America",
+    grade: "6",
+    subject: "pe",
+    keywords: ["soccer", "strategy", "space", "target", "plant foot", "follow-through", "practice"],
+    text: "Apply knowledge of concepts, principles, strategies, and tactics related to movement and performance."
   },
   {
     id: "CCSS.ELA-LITERACY.RH.6-8.1",
@@ -1106,12 +1146,12 @@ function inferLessonContext(text = getAnalyzableLessonText()) {
       topic: "historical figure research",
       objective: "research a historical figure and explain their impact using evidence from sources",
       language: "historical figure, source, evidence, impact, contribution, explain",
-      hook: "Display two short source excerpts and ask students what the details reveal about the person.",
-      directTeach: "Model how to pull one fact, one piece of evidence, and one impact statement from a short source.",
-      guidedPractice: "Students sort source details into facts, evidence, and impact statements with a partner.",
-      independentPractice: "Students begin a research organizer and draft one evidence-based impact statement.",
-      assessment: "Collect the organizer row or exit response showing one accurate fact, one source detail, and one impact explanation.",
-      grouping: "Whole group model, partner evidence sort, then independent organizer work."
+      hook: "Build background before students research: show a picture, name, or short fact about the historical figure, then ask, \"What do we already know, what do we wonder, and what kind of source could help us prove it?\" Prompt students to connect the person to a time period, place, problem, or contribution before they open the full research task.",
+      directTeach: "Use a short teacher-created source sample: \"Maria Tallchief grew up in Oklahoma and became one of America's first major prima ballerinas. She helped change how people viewed American ballet because she proved that dancers trained in the United States could perform at the highest level.\" Model underlining one fact, boxing one source detail, and writing one impact note: Fact - Maria Tallchief was a ballerina. Evidence - she became one of America's first major prima ballerinas. Impact - she helped change how people viewed American ballet.",
+      guidedPractice: "Give students a second short reference paragraph and a sorting sheet. Students sort details into three labeled columns: Facts About The Person, Evidence From The Source, and Why It Matters. Directions on the student sheet: Read the source. Cut or copy each detail into the best column. Be ready to explain why one detail shows impact.",
+      independentPractice: "Students complete the Historical Figure Research Organizer with these sections: name, time/place, three key facts, two source details, one contribution or impact, and one question for more research. Include a completed sample row for the teacher and students to reference.",
+      assessment: "Collect the organizer row or exit response showing one accurate fact, one source detail, and one impact explanation. Students should be able to explain what the person did and why it mattered using evidence from a source.",
+      grouping: "Whole group background builder and teacher model, partner source sort for guided practice, then independent organizer work with teacher check-ins."
     };
   }
   if (/erosion|weathering|landforms?/.test(lower)) {
@@ -1123,8 +1163,8 @@ function inferLessonContext(text = getAnalyzableLessonText()) {
       directTeach: "Model how to connect one visible change to a claim about erosion.",
       guidedPractice: "Students examine a shared image or station and choose the strongest evidence.",
       independentPractice: "Students write a claim using evidence from the observation.",
-      assessment: "Collect a CER response or exit ticket naming the claim and evidence.",
-      grouping: "Whole group model, station or partner evidence talk, independent CER response."
+      assessment: "Collect a written response or exit ticket naming the idea and supporting evidence.",
+      grouping: "Whole group model, station or partner evidence talk, independent written explanation."
     };
   }
   return {
@@ -1386,12 +1426,15 @@ async function launchAssessment(scope) {
 
 function selectOrganizers() {
   const subject = document.getElementById("lesson-subject")?.value || "science";
+  const sourceText = getAnalyzableLessonText().toLowerCase();
   const scienceSet = ["KWL.png", "Word Web.pdf", "Drawing Conclusions.pdf", "What I learned today.pdf", "Blank 4-Column Topic Grid.pdf"];
   const elaSet = ["Story Elements.png", "Character Setting Plot.pdf", "Essay Map.pdf", "Evidence of Theme.pdf", "Summarize.png"];
   const mathSet = ["Blank Grid.pdf", "Problem Solution Organizer.pdf", "Blank 4 rows.pdf", "Pro-Con.png"];
-  const socialSet = ["Timeline.pdf", "Document Analysis.pdf", "Compare and Contrast.png", "Event Details.pdf"];
+  const socialSet = /historical|figure|research/.test(sourceText)
+    ? ["Historical Figure Research Organizer", "Fact-Evidence-Impact Sorting Sheet", "Completed Research Organizer Sample", "Timeline.pdf", "Document Analysis.pdf"]
+    : ["Timeline.pdf", "Document Analysis.pdf", "Compare and Contrast.png", "Event Details.pdf"];
   const generalSet = ["What I learned today.pdf", "KWL.png", "Word Web.pdf", "Blank Grid.pdf"];
-  return ({ science: scienceSet, ela: elaSet, math: mathSet, "social-studies": socialSet }[subject] || generalSet).slice(0, 3);
+  return ({ science: scienceSet, ela: elaSet, math: mathSet, "social-studies": socialSet }[subject] || generalSet).slice(0, 5);
 }
 
 function getDaysAvailable(item) {
@@ -1483,9 +1526,7 @@ function clearTeacherSubmission(item) {
 
 function buildGeneratedLessonLines(item) {
   const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
-  const standards = item.standards?.length
-    ? item.standards.map(standard => `${standard.framework}: ${standard.id}`).join("; ")
-    : "Standards will be finalized after the standards matcher is connected.";
+  const standards = formatStandardsForOutput(item.standards, item.subject);
   const standardsSource = item.standardsSource || item.standards?.[0]?.sourceLabel || `${standardsConfig.baseLabel}: ${baseFrameworkForSubject(item.subject)}`;
   const standardsNote = item.standards?.find(standard => standard.fallbackNote)?.fallbackNote || "";
   const strategies = item.strategies?.length
@@ -1513,6 +1554,9 @@ function buildGeneratedLessonLines(item) {
     standardsNote ? `Note: ${standardsNote}` : "",
     standards,
     "",
+    "Teacher-Ready Standard Expectation",
+    summarizeStandardsExpectation(item.standards, context, item.subject),
+    "",
     "Board Language",
     item.objective || buildObjectiveStatement(),
     "",
@@ -1537,6 +1581,43 @@ function buildGeneratedLessonLines(item) {
     "",
     copyrightNotice
   ];
+}
+
+function formatStandardsForOutput(standards = [], subject = "") {
+  if (!standards.length) return "Standards will be finalized after AI standards matching.";
+  return standards.map(standard => `${standard.framework}: ${standard.id} - ${standard.text}`).join("\n");
+}
+
+function summarizeStandardsExpectation(standards = [], context = {}, subject = "") {
+  if (standards.length) {
+    const standardText = standards.map(standard => standard.text).join(" ").toLowerCase();
+    if (/research|source|quote|paraphrase|textual evidence|primary|secondary/.test(standardText)) {
+      return "Students are expected to gather information from more than one source, quote or paraphrase accurately, identify relevant evidence, and explain how that evidence supports what the historical figure did and why it mattered.";
+    }
+    if (/motor skills|movement patterns|movement and performance|physical activities/.test(standardText)) {
+      return "Students are expected to demonstrate safe, controlled movement skills and explain or apply the cues that improve performance during the physical activity.";
+    }
+    if (/observations|measurements|evidence|argument|claim/.test(standardText)) {
+      return "Students are expected to use observations or evidence to support an explanation, claim, argument, or conclusion connected to the lesson content.";
+    }
+  }
+  if (subject === "social-studies" || /historical figure|research/.test(context.topic || "")) {
+    return "Students should research with sources, collect accurate facts, organize evidence, and explain historical impact in their own words.";
+  }
+  if (subject === "pe" || /soccer|kicking|physical/.test(context.topic || "")) {
+    return "Students should build background knowledge, practice controlled movement, use teacher cues, and demonstrate the skill safely during an activity task.";
+  }
+  return "Students should show the selected grade-level expectation through the lesson task, academic language, and evidence of learning.";
+}
+
+function strategyIntegrationLabel(strategyName, selectedSystems = []) {
+  const normalized = String(strategyName || "").toLowerCase();
+  const hasSystem = id => selectedSystems.includes(systemLabels[id]) || selectedSystems.includes(id.toUpperCase());
+  if (/claim|evidence|reason|cer/.test(normalized) && hasSystem("cer")) return "CER";
+  if (/rally|quiz|pair|coach|share/.test(normalized) && hasSystem("kagan")) return "Kagan";
+  if (/question|product|project/.test(normalized) && hasSystem("pbl")) return "PBL";
+  if (/input|objective|practice|language/.test(normalized) && hasSystem("siop")) return "SIOP";
+  return "Strategy";
 }
 
 function safeFilename(title, extension) {
@@ -1586,7 +1667,7 @@ function downloadGeneratedDocx(item) {
   const xmlLines = buildGeneratedLessonLines(item).map(line => {
     const escaped = escapeXml(line || " ");
     if (!line) return `<w:p/>`;
-    const isHeading = !line.startsWith("-") && ["Lesson Mentor Generated Draft", item.title, "Auto Standards", "Board Language", "Strategies To Include", "Strategy Integrations/IEP", "Recommended Graphic Organizers", "Lesson-Specific Teaching Flow", "Prototype Note"].includes(line);
+    const isHeading = !line.startsWith("-") && ["Lesson Mentor Generated Draft", item.title, "Auto Standards", "Teacher-Ready Standard Expectation", "Board Language", "Strategies To Include", "Strategy Integrations/IEP", "Recommended Graphic Organizers", "Lesson-Specific Teaching Flow", "Prototype Note"].includes(line);
     const isCopyright = line === copyrightNotice;
     return `<w:p><w:r><w:rPr>${isHeading ? "<w:b/>" : ""}${isCopyright ? '<w:color w:val="8A94A6"/><w:sz w:val="16"/>' : ""}</w:rPr><w:t xml:space="preserve">${escaped}</w:t></w:r></w:p>`;
   }).join("");
@@ -1611,9 +1692,7 @@ function makeLessonPlanPdf(item) {
   const margin = 30;
   const pageWidth = 792;
   const contentWidth = pageWidth - margin * 2;
-  const standards = item.standards?.length
-    ? item.standards.map(standard => `${standard.framework}: ${standard.id}`).join("; ")
-    : "Standards will be finalized after AI standards matching.";
+  const standards = formatStandardsForOutput(item.standards, item.subject);
   const standardsSource = item.standardsSource || item.standards?.[0]?.sourceLabel || `${standardsConfig.baseLabel}: ${baseFrameworkForSubject(item.subject)}`;
   const grade = item.grade || document.getElementById("lesson-grade")?.value || "";
   const subject = subjectLabel(item.subject || document.getElementById("lesson-subject")?.value || "");
@@ -1688,14 +1767,17 @@ function buildTemplateSegments(item) {
   const objective = item.objective || buildObjectiveStatement();
   const primaryStrategy = strategyList[0] || "Comprehensible Input";
   const secondaryStrategy = strategyList[1] || "Structured Partner Talk";
-  const cerStrategy = strategyList.find(strategy => /claim|evidence|reason/i.test(strategy)) || "Claim Evidence Reasoning Frame";
+  const selectedSystems = item.systems || [];
+  const cerSelected = selectedSystems.includes("CER");
+  const evidenceStrategy = strategyList.find(strategy => /claim|evidence|reason/i.test(strategy));
+  const finalStrategy = evidenceStrategy && cerSelected ? evidenceStrategy : (strategyList[2] || secondaryStrategy || primaryStrategy);
   return [
     {
       segment: "Hook & Background Building",
       teacher: context.hook,
       student: "Activate prior knowledge, notice key details, and make an initial prediction or connection.",
       language: `Preview vocabulary: ${context.language || item.keywords?.slice(0, 5).join(", ") || "content vocabulary"}.`,
-      integration: `${primaryStrategy} (SIOP). Offer a visual/context anchor before directions.`
+      integration: `${primaryStrategy} (${strategyIntegrationLabel(primaryStrategy, selectedSystems)}). Give the teacher exact launch language and a visible anchor before directions.`
     },
     {
       segment: "Direct Teach (I do)",
@@ -1709,20 +1791,20 @@ function buildTemplateSegments(item) {
       teacher: context.guidedPractice,
       student: "Work with a partner or small group to sort, discuss, or apply evidence to the shared task.",
       language: "Require students to say the evidence before writing it. Capture one shared response.",
-      integration: `${secondaryStrategy} (Kagan/SIOP). Add teacher check-in for students needing support.`
+      integration: `${secondaryStrategy} (${strategyIntegrationLabel(secondaryStrategy, selectedSystems)}). Add teacher check-in for students needing support.`
     },
     {
       segment: "Independent Work (You do)",
       teacher: context.independentPractice,
       student: "Complete the task using the model, sentence frame, organizer, and evidence gathered during guided work.",
-      language: "Students write or present using claim, evidence, and explanation language.",
-      integration: `${cerStrategy} (CER). ${supportList[1] || supportList[0]}`
+      language: cerSelected ? "Students write or present using claim, evidence, and explanation language." : "Students write or present using source, detail, and explanation language.",
+      integration: `${finalStrategy} (${strategyIntegrationLabel(finalStrategy, selectedSystems)}). ${supportList[1] || supportList[0]}`
     },
     {
       segment: "Wrap-Up & Check",
       teacher: context.assessment,
       student: "Submit an exit response, explain one piece of evidence, or reflect on the strategy that helped most.",
-      language: "Board-ready closure: Today I learned ___ because the evidence showed ___.",
+      language: cerSelected ? "Board-ready closure: Today I learned ___ because the evidence showed ___." : "Board-ready closure: Today I learned ___ from the source detail ___. This matters because ___.",
       integration: `${supportList[2] || "Offer a short break or reduced-response option when appropriate. (IEP)"}`
     }
   ];

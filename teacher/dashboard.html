@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="/styles.css?v=live11">
+    <link rel="stylesheet" href="/styles.css?v=live12">
   </head>
   <body>
     <div class="mobile-use-warning" id="mobile-use-warning" role="dialog" aria-labelledby="mobile-warning-title" aria-describedby="mobile-warning-copy">
@@ -160,7 +160,7 @@
                     <input type="file" id="lesson-file" accept=".txt,.md,.csv,.doc,.docx,.pdf,.png,.jpg,.jpeg,.webp,.heic,.heif,image/*" multiple>
                     <small>Upload typed files, PDFs, screenshots, or photos from teacher materials. Image text will be read with OCR/server parsing in the full build.</small>
                   </label>
-                  <textarea id="lesson-text" rows="4"></textarea>
+                  <textarea id="lesson-text" rows="4" placeholder="Alternative: enter your objectives, lesson ideas, or prompt for a lesson to be created for you. Give as much detail as possible, i.e. age range, grade, reading level, for accuracy."></textarea>
                   <div class="button-row">
                     <button class="primary-button" id="generate-lesson">Generate plan</button>
                     <button class="secondary-button" id="analyze-lesson">Analyze only</button>
@@ -522,7 +522,7 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabaseClient.js"></script>
-    <script src="/app.js?v=live11"></script>
+    <script src="/app.js?v=live12"></script>
     <footer class="site-footer">Lesson Mentor is a product of <a href="https://educationunderconstruction.com" target="_blank" rel="noopener">Education Under Construction</a>.</footer>
   </body>
 </html>

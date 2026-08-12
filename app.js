@@ -28,6 +28,8 @@ const accountProfile = {
   teachingState: "BASE"
 };
 
+const lessonPromptPlaceholder = "Alternative: enter your objectives, lesson ideas, or prompt for a lesson to be created for you. Give as much detail as possible, i.e. age range, grade, reading level, for accuracy.";
+
 const copyrightNotice = "© 2026 Lesson Mentor | Education Under Construction LLC. Signature lesson plan template format protected. Do not remove.";
 
 const standardsConfig = {
@@ -717,6 +719,8 @@ function applyInitialHashRoute() {
 }
 
 function bindTeacher() {
+  const promptBox = document.getElementById("lesson-text");
+  if (promptBox) promptBox.placeholder = lessonPromptPlaceholder;
   on("class-select", "change", event => {
     appState.activePeriod = event.target.value;
     syncLessonPeriodControls(appState.activePeriod);

@@ -3200,6 +3200,25 @@ body.is-mobile-device .mobile-use-warning p {
   min-height: 260px;
 }
 
+.site-footer {
+  width: 100%;
+  padding: 24px 20px 30px;
+  text-align: center;
+  color: rgba(30, 41, 59, 0.62);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.site-footer a {
+  color: #0f4fb8;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 900px) {
   .landing-nav,
   .landing-hero,

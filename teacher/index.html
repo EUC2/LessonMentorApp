@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Teacher Login | Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="../styles.css?v=live13">
+    <link rel="stylesheet" href="../styles.css?v=auth-clean-20260815">
   </head>
   <body class="portal-login-page">
     <main class="login-shell">
@@ -19,8 +19,8 @@
         <form class="login-form" data-auth-form data-required-roles="teacher" data-redirect="/teacher/dashboard.html">
           <label>Email <input name="email" type="email" placeholder="teacher@school.org" autocomplete="email" required></label>
           <label>Password <input name="password" type="password" placeholder="Password" autocomplete="current-password" required></label>
-          <button class="primary-button login-link" type="submit">Continue To Teacher Dashboard</button>
-          <p class="auth-status" data-auth-status aria-live="polite"></p>
+          <button class="primary-button login-link" type="submit" data-auth-submit disabled>Continue To Teacher Dashboard</button>
+          <p class="auth-status" data-auth-status aria-live="polite">Checking secure login...</p>
         </form>
         <a class="portal-logout-link" href="/">Back To Home</a>
       </section>
@@ -29,6 +29,6 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabaseClient.js"></script>
-    <script src="/auth.js?v=auth1"></script>
+    <script src="/auth.js?v=auth-clean-20260815"></script>
   </body>
 </html>

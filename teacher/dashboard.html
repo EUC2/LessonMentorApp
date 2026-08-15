@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="/styles.css?v=live15">
+    <link rel="stylesheet" href="/styles.css?v=auth-clean-20260815">
   </head>
-  <body data-require-roles="teacher,school_admin,owner_admin">
+  <body data-require-roles="teacher,school_admin,owner_admin" data-auth-state="checking">
     <div class="mobile-use-warning" id="mobile-use-warning" role="dialog" aria-labelledby="mobile-warning-title" aria-describedby="mobile-warning-copy">
       <div>
         <strong id="mobile-warning-title">Lesson Mentor Works Best On A Computer</strong>
@@ -28,8 +28,8 @@
         <div class="status-box">
           <span class="status-dot"></span>
           <div>
-            <strong>Live Starter</strong>
-            <p>Demo mode until Supabase is configured.</p>
+            <strong>Secure Session</strong>
+            <p>Checking Supabase connection.</p>
           </div>
         </div>
       </aside>
@@ -37,7 +37,7 @@
       <main class="workspace">
         <section class="topbar">
           <div class="teacher-title-block">
-            <div class="teacher-avatar" aria-hidden="true">JT</div>
+            <div class="teacher-avatar" aria-hidden="true">T</div>
             <div class="teacher-title-copy">
               <p class="eyebrow">Education Under Construction LLC</p>
               <h2 id="view-title">Teacher Dashboard</h2>
@@ -52,7 +52,7 @@
             </div>
             <div class="topbar-action-row">
               <button class="icon-button" id="open-settings-modal" title="Open settings">Settings</button>
-              <button class="icon-button" id="reset-demo" title="Reset demo data">Reset</button>
+              <button class="icon-button" id="reset-demo" title="Clear the current lesson form">Reset</button>
               <button class="icon-button logout-button" id="logout-demo" data-auth-logout title="Log out">Log Out</button>
             </div>
           </div>
@@ -66,20 +66,11 @@
                   <h4>Class Profile</h4>
                   <div class="teacher-code-card">
                     <span>Teacher Code</span>
-                    <strong id="teacher-class-code">LM-P1-SCI</strong>
+                    <strong id="teacher-class-code">Not Assigned</strong>
                   </div>
                   <label class="class-picker compact-picker">Class
                     <select id="class-select" aria-label="Class period">
-                      <option value="1">Period 1 - Grade 4 Science</option>
-                      <option value="2">Period 2 - Grade 5 ELA</option>
-                      <option value="3">Period 3 - Grade 3 Science</option>
-                      <option value="4">Period 4 - Math Intervention</option>
-                      <option value="5">Period 5 - Grade 4 Science</option>
-                      <option value="6">Period 6 - Planning</option>
-                      <option value="7">Period 7 - Social Studies</option>
-                      <option value="8">Period 8 - Enrichment</option>
-                      <option value="9">Period 9 - Reading Lab</option>
-                      <option value="10">Period 10 - Homeroom</option>
+                      <option value="">No Classes Configured</option>
                     </select>
                   </label>
                 </div>
@@ -100,16 +91,7 @@
                     <div class="lesson-meta-grid saved-class-only">
                       <label class="saved-class-field">Class / Period
                         <select id="lesson-period">
-                          <option value="1">Period 1 - Grade 4 Science</option>
-                          <option value="2">Period 2 - Grade 5 ELA</option>
-                          <option value="3">Period 3 - Grade 3 Science</option>
-                          <option value="4">Period 4 - Math Intervention</option>
-                          <option value="5">Period 5 - Grade 4 Science</option>
-                          <option value="6">Period 6 - Planning</option>
-                          <option value="7">Period 7 - Social Studies</option>
-                          <option value="8">Period 8 - Enrichment</option>
-                          <option value="9">Period 9 - Reading Lab</option>
-                          <option value="10">Period 10 - Homeroom</option>
+                          <option value="">No Classes Configured</option>
                         </select>
                       </label>
                       <span class="lesson-or-divider" aria-hidden="true">OR</span>
@@ -191,8 +173,8 @@
             <div class="panel student-avatar-panel" id="student-avatar-panel">
               <h4>Student Sign-In</h4>
               <div class="form-grid">
-                <label>Student ID <input id="student-id" value="48291"></label>
-                <label>Teacher Code <input id="student-teacher-code" value="LM-P1-SCI"></label>
+                <label>Student ID <input id="student-id" value=""></label>
+                <label>Teacher Code <input id="student-teacher-code" value=""></label>
                 <label class="switch-label inline-switch">
                   <input type="checkbox" id="read-aloud-toggle">
                   <span>Read questions aloud</span>
@@ -345,22 +327,22 @@
           <div class="settings-card settings-card-wide">
             <strong>Release To Students</strong>
             <p>Open the same assessment question set for a whole class, a small group, or one student who needs to complete it later.</p>
-            <div class="lesson-meta-grid compact-launch-form">
-              <label>Who receives it?
+            <div class="assessment-release-form">
+              <label class="assessment-recipient-field">Who receives it?
                 <select>
                   <option>Entire selected class</option>
                   <option>One student ID</option>
                   <option>Selected group</option>
                 </select>
               </label>
-              <label>Question set
+              <label class="assessment-question-field">Question set
                 <select>
-                  <option>Grade 3-5 baseline: 10 questions</option>
-                  <option>K-2 baseline: 10 questions</option>
-                  <option>Grades 6-12 baseline: 10 questions</option>
+                  <option>Grade 3-5 baseline: 12 questions</option>
+                  <option>K-2 baseline: 12 questions</option>
+                  <option>Grades 6-12 baseline: 12 questions</option>
                 </select>
               </label>
-              <label>Order
+              <label class="assessment-order-field">Order
                 <select>
                   <option>Same order for everyone</option>
                   <option>Randomized later</option>
@@ -522,8 +504,8 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabaseClient.js"></script>
-    <script src="/auth.js?v=auth1"></script>
-    <script src="/app.js?v=live15"></script>
+    <script src="/auth.js?v=auth-clean-20260815"></script>
+    <script src="/app.js?v=auth-clean-20260815"></script>
     <footer class="site-footer">Lesson Mentor is a product of <a href="https://educationunderconstruction.com" target="_blank" rel="noopener">Education Under Construction</a>.</footer>
   </body>
 </html>

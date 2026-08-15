@@ -76,13 +76,28 @@
     window.location.assign(form.dataset.redirect || "/");
   }
 
+  function configureLoginForms() {
+    const api = window.LessonMentorAPI;
+    const configured = Boolean(api && !api.isDemoMode());
+    document.querySelectorAll("[data-auth-form]").forEach(form => {
+      const submit = form.querySelector("[data-auth-submit]");
+      if (submit) submit.disabled = !configured;
+      form.addEventListener("submit", handleLogin);
+    });
+    if (document.querySelector("[data-auth-form]")) {
+      status(configured
+        ? ""
+        : "Secure login is unavailable until this site's Supabase URL and public anon key are configured.", !configured);
+    }
+  }
+
   async function handleLogout(event) {
     event.preventDefault();
     await window.LessonMentorAPI?.signOut();
     window.location.replace("/");
   }
 
-  document.querySelectorAll("[data-auth-form]").forEach(form => form.addEventListener("submit", handleLogin));
+  configureLoginForms();
   document.querySelectorAll("[data-auth-logout]").forEach(button => button.addEventListener("click", handleLogout));
   protectPage();
 })();

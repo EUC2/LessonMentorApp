@@ -146,10 +146,10 @@
         <p>Choose one avatar first. Then your assessment will open.</p>
         <div class="student-signin-grid">
           <label>Student ID
-            <input id="student-id" type="text" value="48291" autocomplete="off">
+            <input id="student-id" type="text" value="" autocomplete="off">
           </label>
           <label>Teacher Code
-            <input id="student-teacher-code" type="text" value="LM-P1-SCI" autocomplete="off">
+            <input id="student-teacher-code" type="text" value="" autocomplete="off">
           </label>
         </div>
         <div class="avatar-grid" id="avatar-grid" aria-label="Choose an avatar"></div>
@@ -197,7 +197,7 @@
 
       // Full build: replace this demo flag with the teacher launch lookup from Supabase.
       // Example future check: const teacherAssessmentDemoOpen = activeAssessmentLaunch?.status === "open";
-      const teacherAssessmentDemoOpen = true;
+      const teacherAssessmentDemoOpen = false;
 
       let selectedAvatar = "";
 

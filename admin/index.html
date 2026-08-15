@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mentor 360 | Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="../styles.css?v=auth1">
+    <link rel="stylesheet" href="../styles.css?v=auth-clean-20260815">
   </head>
   <body class="owner-admin-page">
     <main class="login-shell" id="admin-login-view">
@@ -19,8 +19,8 @@
         <form class="login-form" data-auth-form data-required-roles="owner_admin" data-redirect="/admin/">
           <label>Email <input name="email" type="email" autocomplete="email" required></label>
           <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
-          <button class="primary-button login-link" type="submit">Open Mentor 360</button>
-          <p class="auth-status" data-auth-status aria-live="polite"></p>
+          <button class="primary-button login-link" type="submit" data-auth-submit disabled>Open Mentor 360</button>
+          <p class="auth-status" data-auth-status aria-live="polite">Checking secure login...</p>
         </form>
         <a class="portal-logout-link" href="/">Back To Home</a>
       </section>
@@ -123,7 +123,7 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabaseClient.js"></script>
-    <script src="/auth.js?v=auth1"></script>
+    <script src="/auth.js?v=auth-clean-20260815"></script>
     <script src="/admin/admin.js?v=auth1"></script>
   </body>
 </html>

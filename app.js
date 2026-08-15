@@ -336,110 +336,20 @@ const standardsLibrary = [
 ];
 
 const classProfiles = {
-  "1": {
-    name: "Period 1",
-    profile: { V: 27, A: 14, I: 11, K: 25, R: 12, S: 11 },
-    roster: [
-      { id: "48291", grade: "4", primary: "V", secondary: "K", lastAssessment: "Jun 12, 2026", completed: "8/12" },
-      { id: "51804", grade: "4", primary: "K", secondary: "V", lastAssessment: "Jun 11, 2026", completed: "12/12" },
-      { id: "60418", grade: "4", primary: "A", secondary: "R", lastAssessment: "Jun 10, 2026", completed: "12/12" },
-      { id: "77120", grade: "4", primary: "V", secondary: "A", lastAssessment: "Jun 7, 2026", completed: "10/12" },
-      { id: "83914", grade: "4", primary: "K", secondary: "R", lastAssessment: "Jun 6, 2026", completed: "12/12" }
-    ]
-  },
-  "2": {
-    name: "Period 2",
-    profile: { V: 17, A: 25, I: 11, K: 14, R: 22, S: 11 },
-    roster: [
-      { id: "29310", grade: "5", primary: "A", secondary: "R", lastAssessment: "Jun 9, 2026", completed: "12/12" },
-      { id: "41022", grade: "5", primary: "R", secondary: "A", lastAssessment: "Jun 9, 2026", completed: "11/12" },
-      { id: "61087", grade: "5", primary: "A", secondary: "S", lastAssessment: "Jun 8, 2026", completed: "12/12" },
-      { id: "75922", grade: "5", primary: "R", secondary: "K", lastAssessment: "Jun 8, 2026", completed: "9/12" }
-    ]
-  },
-  "3": {
-    name: "Period 3",
-    profile: { V: 21, A: 15, I: 10, K: 28, R: 16, S: 10 },
-    roster: [
-      { id: "10294", grade: "3", primary: "K", secondary: "V", lastAssessment: "Jun 5, 2026", completed: "12/12" },
-      { id: "34710", grade: "3", primary: "V", secondary: "K", lastAssessment: "Jun 5, 2026", completed: "12/12" },
-      { id: "50218", grade: "3", primary: "K", secondary: "A", lastAssessment: "Jun 4, 2026", completed: "10/12" },
-      { id: "65044", grade: "3", primary: "R", secondary: "V", lastAssessment: "Jun 4, 2026", completed: "12/12" }
-    ]
-  },
-  "4": {
-    name: "Period 4",
-    profile: { V: 16, A: 16, I: 10, K: 20, R: 28, S: 10 },
-    roster: [
-      { id: "22904", grade: "4", primary: "R", secondary: "K", lastAssessment: "Jun 3, 2026", completed: "12/12" },
-      { id: "33018", grade: "4", primary: "K", secondary: "R", lastAssessment: "Jun 3, 2026", completed: "12/12" },
-      { id: "44921", grade: "4", primary: "V", secondary: "A", lastAssessment: "Jun 2, 2026", completed: "9/12" }
-    ]
-  },
-  "5": {
-    name: "Period 5",
-    profile: { V: 30, A: 13, I: 10, K: 22, R: 14, S: 11 },
-    roster: [
-      { id: "51882", grade: "4", primary: "V", secondary: "K", lastAssessment: "Jun 1, 2026", completed: "12/12" },
-      { id: "62810", grade: "4", primary: "V", secondary: "R", lastAssessment: "May 31, 2026", completed: "12/12" },
-      { id: "73940", grade: "4", primary: "K", secondary: "V", lastAssessment: "May 30, 2026", completed: "11/12" }
-    ]
-  },
-  "6": {
-    name: "Period 6",
-    profile: { V: 17, A: 17, I: 16, K: 17, R: 16, S: 17 },
+  "": {
+    name: "No Class Selected",
+    profile: { V: 0, A: 0, I: 0, K: 0, R: 0, S: 0 },
     roster: []
-  },
-  "7": {
-    name: "Period 7",
-    profile: { V: 22, A: 19, I: 10, K: 14, R: 25, S: 10 },
-    roster: [
-      { id: "70014", grade: "5", primary: "R", secondary: "V", lastAssessment: "May 29, 2026", completed: "12/12" },
-      { id: "70032", grade: "5", primary: "A", secondary: "R", lastAssessment: "May 29, 2026", completed: "12/12" }
-    ]
-  },
-  "8": {
-    name: "Period 8",
-    profile: { V: 24, A: 18, I: 10, K: 24, R: 14, S: 10 },
-    roster: [
-      { id: "81005", grade: "4", primary: "K", secondary: "V", lastAssessment: "May 27, 2026", completed: "10/12" },
-      { id: "81016", grade: "4", primary: "V", secondary: "K", lastAssessment: "May 27, 2026", completed: "12/12" }
-    ]
-  },
-  "9": {
-    name: "Period 9",
-    profile: { V: 15, A: 22, I: 11, K: 12, R: 30, S: 10 },
-    roster: [
-      { id: "92044", grade: "5", primary: "R", secondary: "A", lastAssessment: "May 25, 2026", completed: "12/12" },
-      { id: "92070", grade: "5", primary: "R", secondary: "V", lastAssessment: "May 25, 2026", completed: "12/12" }
-    ]
-  },
-  "10": {
-    name: "Period 10",
-    profile: { V: 26, A: 18, I: 11, K: 19, R: 16, S: 10 },
-    roster: [
-      { id: "10411", grade: "4", primary: "V", secondary: "A", lastAssessment: "May 22, 2026", completed: "12/12" },
-      { id: "10429", grade: "4", primary: "K", secondary: "V", lastAssessment: "May 22, 2026", completed: "11/12" }
-    ]
   }
 };
 
 const classAccessCodes = {
-  "1": { code: "LM-P1-SCI", courseKey: "grade4-science", gradeBand: "g35", grade: "4", subject: "science", supports: ["sentence-frames", "chunked-directions", "movement-break", "teacher-checkin", "graphic-organizer"] },
-  "2": { code: "LM-P2-ELA", gradeBand: "g35", grade: "5", subject: "ela", supports: ["sentence-frames", "chunked-directions", "teacher-checkin", "graphic-organizer", "read-aloud"] },
-  "3": { code: "LM-P3-SCI", gradeBand: "g35", grade: "3", subject: "science", supports: ["chunked-directions", "movement-break", "teacher-checkin", "graphic-organizer"] },
-  "4": { code: "LM-P4-MATH", gradeBand: "g35", grade: "4", subject: "math", supports: ["chunked-directions", "movement-break", "teacher-checkin"] },
-  "5": { code: "LM-P5-SCI", courseKey: "grade4-science", gradeBand: "g35", grade: "4", subject: "science", supports: ["sentence-frames", "teacher-checkin", "graphic-organizer"] },
-  "6": { code: "LM-P6-PLAN", gradeBand: "g35", grade: "4", subject: "stem", supports: [] },
-  "7": { code: "LM-P7-SS", gradeBand: "g35", grade: "5", subject: "social-studies", supports: ["sentence-frames", "chunked-directions", "teacher-checkin", "graphic-organizer", "read-aloud"] },
-  "8": { code: "LM-P8-ENR", gradeBand: "g35", grade: "4", subject: "stem", supports: ["movement-break", "graphic-organizer"] },
-  "9": { code: "LM-P9-READ", gradeBand: "g35", grade: "5", subject: "ela", supports: ["sentence-frames", "chunked-directions", "teacher-checkin", "read-aloud"] },
-  "10": { code: "LM-P10-HR", gradeBand: "g35", grade: "4", subject: "social-studies", supports: ["sentence-frames", "teacher-checkin"] }
+  "": { code: "Not Assigned", gradeBand: "g35", grade: "", subject: "", supports: [] }
 };
 
 // Full build: replace this demo flag with the teacher launch lookup from Supabase.
 // Example future check: const studentAssessmentDemoOpen = activeAssessmentLaunch?.status === "open";
-const studentAssessmentDemoOpen = true;
+const studentAssessmentDemoOpen = false;
 
 const strategyLibrary = [
   {
@@ -620,7 +530,7 @@ function rankedOptions(v, a, r, k, i, s) {
 }
 
 const appState = {
-  activePeriod: "1",
+  activePeriod: "",
   enabledSystems: { kagan: true, siop: true, cer: true, pbl: false, iep: true },
   selectedSupports: { "sentence-frames": true, "chunked-directions": true, "movement-break": true, "teacher-checkin": true, "graphic-organizer": true, "read-aloud": false },
   lessonText: "",
@@ -851,11 +761,11 @@ function bindTeacher() {
 }
 
 function getClassConfig(period = appState.activePeriod) {
-  return classAccessCodes[period] || classAccessCodes["1"];
+  return classAccessCodes[period] || classAccessCodes[""];
 }
 
 function hasConfiguredClasses() {
-  return Object.keys(classAccessCodes).length > 0;
+  return Object.keys(classAccessCodes).some(period => period !== "");
 }
 
 function setLessonDetailMode() {
@@ -906,7 +816,7 @@ function renderConnectionStatus() {
   const api = window.LessonMentorAPI;
   status.textContent = api && !api.isDemoMode()
     ? "Connected to Supabase."
-    : "Demo mode until Supabase is configured.";
+    : "Supabase connection required.";
 }
 
 function bindStudent() {
@@ -957,8 +867,8 @@ function renderAll() {
 function renderTeacher() {
   if (!document.getElementById("teacher-view")) return;
   syncLessonPeriodControls(appState.activePeriod);
-  const profile = classProfiles[appState.activePeriod];
-  const classCode = getClassConfig(appState.activePeriod)?.code || "LM-CLASS";
+  const profile = classProfiles[appState.activePeriod] || classProfiles[""];
+  const classCode = getClassConfig(appState.activePeriod)?.code || "Not Assigned";
   paintCompass("teacher-compass", profile.profile);
   renderStats("teacher-profile-stats", profile.profile);
   const codeEl = document.getElementById("teacher-class-code");
@@ -1045,7 +955,7 @@ function renderIepSupports() {
 }
 
 function openStudentProfile(studentId) {
-  const student = classProfiles[appState.activePeriod].roster.find(item => item.id === studentId);
+  const student = (classProfiles[appState.activePeriod] || classProfiles[""]).roster.find(item => item.id === studentId);
   if (!student) return;
   const questions = questionBank.g35.slice(0, 3);
   const modal = document.getElementById("student-profile-modal");
@@ -1412,11 +1322,14 @@ function buildClassLearningStylePlan(profile) {
   const secondary = ranking[1];
   const primaryGuide = learningStyleInstruction[primary.key];
   const secondaryGuide = learningStyleInstruction[secondary.key];
+  const hasProfileData = ranking.some(item => item.percent > 0);
   return {
     ranking,
     primary,
     secondary,
-    summary: `${primary.name} ${primary.percent}% is the primary class pathway; ${secondary.name} ${secondary.percent}% is secondary. The lesson keeps access points for ${ranking.slice(2).map(item => `${item.name} ${item.percent}%`).join(", ")}.`,
+    summary: hasProfileData
+      ? `${primary.name} ${primary.percent}% is the primary class pathway; ${secondary.name} ${secondary.percent}% is secondary. The lesson keeps access points for ${ranking.slice(2).map(item => `${item.name} ${item.percent}%`).join(", ")}.`
+      : "No class learning-style results are available yet. Generate without class-specific differentiation or launch an assessment first.",
     priorities: [
       `${primary.name} (${primary.percent}%): ${primaryGuide.priority}`,
       `${secondary.name} (${secondary.percent}%): ${secondaryGuide.priority}`
@@ -1622,7 +1535,12 @@ async function persistLessonSubmission(submission) {
 
 async function launchAssessment(scope) {
   const api = window.LessonMentorAPI;
-  const profile = classProfiles[appState.activePeriod];
+  const profile = classProfiles[appState.activePeriod] || classProfiles[""];
+  if (!appState.activePeriod || profile.name === "No Class Selected") {
+    const status = document.getElementById("active-assessment-status");
+    if (status) status.textContent = "Add or select a class before launching an assessment.";
+    return;
+  }
   const gradeBand = classAccessCodes[appState.activePeriod]?.gradeBand || "g35";
   const questions = questionBank[gradeBand] || questionBank.g35;
   const target = scope === "student" ? "one student" : "selected class";
@@ -2834,7 +2752,7 @@ function renderStrategies() {
   const resultsEl = document.getElementById("strategy-results");
   if (!countEl || !resultsEl) return;
 
-  const profile = classProfiles[appState.activePeriod].profile;
+  const profile = (classProfiles[appState.activePeriod] || classProfiles[""]).profile;
   const enabled = Object.keys(appState.enabledSystems).filter(id => appState.enabledSystems[id]);
   const scored = strategyLibrary
     .filter(strategy => enabled.includes(strategy.system))
@@ -3128,7 +3046,13 @@ function paintCompass(id, profile) {
   const compass = document.getElementById(id);
   if (!compass) return;
   const values = styleOrder.map(key => Math.max(0, profile[key] || 0));
-  const total = values.reduce((sum, value) => sum + value, 0) || 100;
+  const rawTotal = values.reduce((sum, value) => sum + value, 0);
+  if (!rawTotal) {
+    compass.style.background = "#edf2f7";
+    compass.setAttribute("aria-label", "No class learning profile data available");
+    return;
+  }
+  const total = rawTotal;
   let cursor = 0;
   const stops = styleOrder.map((key, index) => {
     const start = cursor;
@@ -3141,6 +3065,10 @@ function paintCompass(id, profile) {
 function renderStats(id, profile) {
   const container = document.getElementById(id);
   if (!container) return;
+  if (!Object.values(profile).some(value => Number(value) > 0)) {
+    container.innerHTML = `<div class="analysis-card"><strong>No Assessment Data Yet</strong><p>Launch an assessment after students are assigned to this class.</p></div>`;
+    return;
+  }
   const orderedStyles = Object.keys(profile).sort((a, b) => {
     const difference = (profile[b] || 0) - (profile[a] || 0);
     return difference || styleOrder.indexOf(a) - styleOrder.indexOf(b);
@@ -3163,6 +3091,7 @@ function sortStyles(modalities) {
 }
 
 function buildInsight(profile) {
+  if (!Object.values(profile).some(value => Number(value) > 0)) return "No class learning-style results are available yet.";
   const ordered = Object.keys(profile).sort((a, b) => profile[b] - profile[a]);
   return `${profile[ordered[0]]}% of this class leans ${styles[ordered[0]].name}, with ${styles[ordered[1]].name} close behind. Recommendations prioritize those styles while still offering whole-class access points.`;
 }

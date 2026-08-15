@@ -47,9 +47,48 @@
     return client.functions.invoke(name, { body: payload });
   }
 
+  async function signIn(email, password) {
+    if (!client || isDemoMode()) return { data: null, error: new Error("Secure login is not configured yet.") };
+    return client.auth.signInWithPassword({ email, password });
+  }
+
+  async function signOut() {
+    if (!client) return { error: null };
+    return client.auth.signOut();
+  }
+
+  async function getSessionProfile() {
+    if (!client || isDemoMode()) return { user: null, profile: null, error: null };
+    const { data: userData, error: userError } = await client.auth.getUser();
+    const user = userData?.user || null;
+    if (userError || !user) return { user: null, profile: null, error: userError };
+    const { data: profile, error } = await client.from("user_profiles").select("*").eq("id", user.id).maybeSingle();
+    return { user, profile, error };
+  }
+
+  async function adminListAccounts() {
+    if (!client || isDemoMode()) return { data: [], error: new Error("Supabase is not configured.") };
+    return client.rpc("admin_list_accounts");
+  }
+
+  async function adminUpdateAccount(payload) {
+    if (!client || isDemoMode()) return { data: null, error: new Error("Supabase is not configured.") };
+    return client.rpc("admin_update_account", payload);
+  }
+
+  async function adminInviteAccount(payload) {
+    return invokeFunction("admin-invite-user", payload);
+  }
+
   window.LessonMentorAPI = {
     client,
     isDemoMode,
+    signIn,
+    signOut,
+    getSessionProfile,
+    adminListAccounts,
+    adminUpdateAccount,
+    adminInviteAccount,
     createLessonSubmission,
     createAssessmentLaunch,
     invokeFunction

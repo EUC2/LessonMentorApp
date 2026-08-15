@@ -3028,6 +3028,184 @@ body.is-mobile-device .mobile-use-warning p {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+[data-auth-state="checking"] .app-shell {
+  visibility: hidden;
+}
+
+.auth-status {
+  min-height: 22px;
+  margin: 0;
+  color: #0f5f5b;
+  font-weight: 750;
+}
+
+.auth-status.auth-error {
+  color: #b4233c;
+}
+
+.compact-owner-hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.compact-owner-hero .primary-button {
+  min-height: 48px;
+}
+
+.owner-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.owner-stat-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.owner-stat-grid span,
+.owner-account-table small {
+  color: var(--muted);
+}
+
+.owner-stat-grid strong {
+  color: #0f4fb8;
+  font-size: 2rem;
+}
+
+.owner-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.owner-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.owner-filter-tabs .teacher-tab {
+  min-height: 42px;
+  padding: 0 14px;
+}
+
+.owner-search input {
+  min-width: 320px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.owner-table-wrap {
+  overflow-x: auto;
+}
+
+.owner-account-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.owner-account-table th,
+.owner-account-table td {
+  padding: 13px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.owner-account-table td:first-child,
+.owner-account-table td:nth-child(4) {
+  display: table-cell;
+}
+
+.owner-account-table td strong,
+.owner-account-table td small {
+  display: block;
+}
+
+.account-status {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.account-status.past_due,
+.account-status.paused {
+  background: #fff1c2;
+  color: #854d0e;
+}
+
+.account-status.closed {
+  background: #ffe0e6;
+  color: #9f1239;
+}
+
+.account360-modal {
+  width: min(940px, calc(100% - 32px));
+}
+
+.account360-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.account360-grid label,
+.account360-modal form > label {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.account360-grid input,
+.account360-grid select,
+.account360-modal textarea {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 11px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.owner-empty {
+  padding: 30px !important;
+  text-align: center !important;
+  color: var(--muted);
+}
+
+@media (max-width: 800px) {
+  .owner-stat-grid,
+  .account360-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .owner-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .owner-search input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 /* Lesson Mentor public landing page reset */
 .landing-page main {
   background: #f4f7fb;

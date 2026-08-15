@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Teacher Login | Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="../styles.css?v=live12">
+    <link rel="stylesheet" href="../styles.css?v=live13">
   </head>
   <body class="portal-login-page">
     <main class="login-shell">
@@ -16,14 +16,19 @@
         </a>
         <h1>Teacher Login</h1>
         <p>Generate lessons, launch assessments, manage student profiles, and browse the strategy library and question bank.</p>
-        <form class="login-form">
-          <label>Email <input type="email" placeholder="teacher@school.org"></label>
-          <label>Password <input type="password" placeholder="Password"></label>
-          <a class="primary-button login-link" href="/teacher/dashboard.html">Continue to Teacher Dashboard</a>
+        <form class="login-form" data-auth-form data-required-roles="teacher" data-redirect="/teacher/dashboard.html">
+          <label>Email <input name="email" type="email" placeholder="teacher@school.org" autocomplete="email" required></label>
+          <label>Password <input name="password" type="password" placeholder="Password" autocomplete="current-password" required></label>
+          <button class="primary-button login-link" type="submit">Continue To Teacher Dashboard</button>
+          <p class="auth-status" data-auth-status aria-live="polite"></p>
         </form>
         <a class="portal-logout-link" href="/">Back To Home</a>
       </section>
     </main>
     <footer class="site-footer">Lesson Mentor is a product of <a href="https://educationunderconstruction.com" target="_blank" rel="noopener">Education Under Construction</a>.</footer>
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabaseClient.js"></script>
+    <script src="/auth.js?v=auth1"></script>
   </body>
 </html>

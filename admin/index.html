@@ -5,134 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mentor 360 | Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="../styles.css?v=live11">
+    <link rel="stylesheet" href="../styles.css?v=auth1">
   </head>
   <body class="owner-admin-page">
-    <header class="landing-nav">
-      <a class="landing-brand" href="/">
-        <img class="brand-logo-image" src="/assets/lessonmentor-logo.png" alt="Lesson Mentor logo">
-        <span><strong>Lesson Mentor</strong><small>Mentor 360</small></span>
-      </a>
-      <nav class="landing-links" aria-label="Admin navigation">
-        <a href="/">Back To Home</a>
-        <a href="/teacher/">Teacher</a>
-        <a href="/school/">School</a>
-        <a class="portal-logout-link compact" href="/">Log Out</a>
-      </nav>
-    </header>
-
-    <main class="owner-shell">
-      <section class="owner-hero">
-        <div>
-          <p class="eyebrow">Owner Admin</p>
-          <h1>Mentor 360</h1>
-          <p>Manage every school account, teacher subscription, billing status, account flag, and global library item from one command center.</p>
-        </div>
-        <div class="owner-login-card">
-          <strong>Owner Login</strong>
-          <label>Email <input type="email" value="support@euc2.org"></label>
-          <label>Password <input type="password" placeholder="Password"></label>
-          <button class="primary-button">Sign in</button>
-        </div>
-      </section>
-
-      <section class="owner-tabs">
-        <button class="teacher-tab active">Schools <span>4</span></button>
-        <button class="teacher-tab">Teachers <span>28</span></button>
-        <button class="teacher-tab">Billing <span>6</span></button>
-        <button class="teacher-tab">Account Flags <span>2</span></button>
-        <button class="teacher-tab">Library + Questions <span>56</span></button>
-      </section>
-
-      <section class="owner-grid">
-        <article class="panel">
-          <div class="panel-title-row">
-            <h4>School accounts</h4>
-            <button class="primary-button">Add school</button>
-          </div>
-          <div class="owner-edit-list">
-            <div class="owner-edit-row">
-              <label>School name <input value="Pilot Elementary"></label>
-              <label>Seats <input type="number" value="8"></label>
-              <label>Status
-                <select>
-                  <option selected>Active</option>
-                  <option>Trial</option>
-                  <option>Past due</option>
-                  <option>Paused</option>
-                </select>
-              </label>
-              <button class="secondary-button">Save</button>
-            </div>
-            <div class="owner-edit-row">
-              <label>School name <input value="Desert Ridge Middle"></label>
-              <label>Seats <input type="number" value="12"></label>
-              <label>Status
-                <select>
-                  <option>Active</option>
-                  <option selected>Trial</option>
-                  <option>Past due</option>
-                  <option>Paused</option>
-                </select>
-              </label>
-              <button class="secondary-button">Save</button>
-            </div>
-            <div class="owner-edit-row">
-              <label>School name <input value="Independent Teacher Plan"></label>
-              <label>Seats <input type="number" value="6"></label>
-              <label>Status
-                <select>
-                  <option selected>Active</option>
-                  <option>Trial</option>
-                  <option>Past due</option>
-                  <option>Paused</option>
-                </select>
-              </label>
-              <button class="secondary-button">Save</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-title-row">
-            <h4>Billing controls</h4>
-            <button class="secondary-button">Export receipts</button>
-          </div>
-          <div class="owner-billing-grid">
-            <label>Billing owner <input value="support@euc2.org"></label>
-            <label>Plan
-              <select>
-                <option>Individual Teacher</option>
-                <option selected>School License</option>
-                <option>District License</option>
-              </select>
-            </label>
-            <label>Renewal date <input type="date" value="2026-08-06"></label>
-            <label>Payment status
-              <select>
-                <option selected>Paid</option>
-                <option>Trial</option>
-                <option>Past due</option>
-                <option>Comped</option>
-              </select>
-            </label>
-          </div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-title-row">
-            <h4>Platform controls</h4>
-            <span class="small-pill">Editable</span>
-          </div>
-          <div class="owner-control-grid">
-            <button class="secondary-button">Edit strategy library</button>
-            <button class="secondary-button">Edit question bank</button>
-            <button class="secondary-button">Manage protected assets</button>
-            <button class="secondary-button">Review account flags</button>
-          </div>
-        </article>
+    <main class="login-shell" id="admin-login-view">
+      <section class="login-card">
+        <a class="landing-brand" href="/">
+          <img class="brand-logo-image" src="/assets/lessonmentor-logo.png" alt="Lesson Mentor logo">
+          <span><strong>Lesson Mentor</strong><small>Mentor 360 Owner Administration</small></span>
+        </a>
+        <h1>Owner Login</h1>
+        <p>Secure access to account, school, subscription, billing, and platform management.</p>
+        <form class="login-form" data-auth-form data-required-roles="owner_admin" data-redirect="/admin/">
+          <label>Email <input name="email" type="email" autocomplete="email" required></label>
+          <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+          <button class="primary-button login-link" type="submit">Open Mentor 360</button>
+          <p class="auth-status" data-auth-status aria-live="polite"></p>
+        </form>
+        <a class="portal-logout-link" href="/">Back To Home</a>
       </section>
     </main>
+
+    <div id="admin-dashboard" hidden>
+      <header class="landing-nav owner-nav">
+        <a class="landing-brand" href="/">
+          <img class="brand-logo-image" src="/assets/lessonmentor-logo.png" alt="Lesson Mentor logo">
+          <span><strong>Lesson Mentor</strong><small>Mentor 360</small></span>
+        </a>
+        <button class="secondary-button logout-button" data-auth-logout type="button">Log Out</button>
+      </header>
+
+      <main class="owner-shell">
+        <section class="owner-hero compact-owner-hero">
+          <div>
+            <p class="eyebrow">Owner Administration</p>
+            <h1>Mentor 360</h1>
+            <p>Search, open, and edit every teacher, school, subscription, access role, payment status, and account flag.</p>
+          </div>
+          <button class="primary-button" id="admin-add-account" type="button">Add Account</button>
+        </section>
+
+        <section class="owner-stat-grid" aria-label="Account totals">
+          <div><span>Accounts</span><strong id="stat-accounts">0</strong></div>
+          <div><span>Teachers</span><strong id="stat-teachers">0</strong></div>
+          <div><span>Schools</span><strong id="stat-schools">0</strong></div>
+          <div><span>Need Attention</span><strong id="stat-flags">0</strong></div>
+        </section>
+
+        <section class="panel owner-account-panel">
+          <div class="owner-toolbar">
+            <div class="owner-filter-tabs" id="admin-filter-tabs">
+              <button class="teacher-tab active" data-filter="all">All Accounts</button>
+              <button class="teacher-tab" data-filter="teacher">Teachers</button>
+              <button class="teacher-tab" data-filter="school_admin">Schools</button>
+              <button class="teacher-tab" data-filter="attention">Needs Attention</button>
+            </div>
+            <label class="owner-search"><span class="sr-only">Search accounts</span><input id="admin-account-search" type="search" placeholder="Search name, email, school, or plan"></label>
+          </div>
+          <p class="auth-status" id="admin-data-status" aria-live="polite"></p>
+          <div class="owner-table-wrap">
+            <table class="owner-account-table">
+              <thead><tr><th>Account</th><th>Organization</th><th>Access</th><th>Plan</th><th>Status</th><th>Renewal</th><th></th></tr></thead>
+              <tbody id="admin-account-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="modal account360-modal" id="account360-modal">
+      <form id="account360-form">
+        <div class="panel-title-row">
+          <div><p class="eyebrow">Mentor 360 Account</p><h2 id="account360-title">Account</h2></div>
+          <button class="icon-button" id="account360-close" type="button" aria-label="Close">Close</button>
+        </div>
+        <input id="account360-id" type="hidden">
+        <div class="account360-grid">
+          <label>Email <input id="account360-email" type="email" readonly></label>
+          <label>Display Name <input id="account360-name" required></label>
+          <label>Organization <input id="account360-organization"></label>
+          <label>Teaching State <input id="account360-state" maxlength="2" placeholder="AZ"></label>
+          <label>Roles <input id="account360-roles" placeholder="teacher, school_admin"></label>
+          <label>Account Status
+            <select id="account360-status"><option>active</option><option>trial</option><option>paused</option><option>past_due</option><option>closed</option></select>
+          </label>
+          <label>Plan <input id="account360-plan" placeholder="Annual Teacher"></label>
+          <label>Payment Status
+            <select id="account360-payment"><option>paid</option><option>trial</option><option>past_due</option><option>comped</option><option>canceled</option></select>
+          </label>
+          <label>Renewal Date <input id="account360-renewal" type="date"></label>
+          <label>Amount (USD) <input id="account360-amount" type="number" min="0" step="0.01"></label>
+        </div>
+        <label>Admin Notes <textarea id="account360-notes" rows="4"></textarea></label>
+        <div class="button-row modal-actions">
+          <button class="secondary-button" id="account360-cancel" type="button">Cancel</button>
+          <button class="primary-button" type="submit">Save Account</button>
+        </div>
+        <p class="auth-status" id="account360-status-message" aria-live="polite"></p>
+      </form>
+    </dialog>
+
+    <dialog class="modal account360-modal" id="invite-account-modal">
+      <form id="invite-account-form">
+        <div class="panel-title-row"><h2>Add Account</h2><button class="icon-button" id="invite-close" type="button">Close</button></div>
+        <div class="account360-grid">
+          <label>Email <input id="invite-email" type="email" required></label>
+          <label>Display Name <input id="invite-name" required></label>
+          <label>Role <select id="invite-role"><option value="teacher">Teacher</option><option value="school_admin">School Admin</option><option value="owner_admin">Owner Admin</option></select></label>
+          <label>Organization <input id="invite-organization"></label>
+        </div>
+        <div class="button-row modal-actions"><button class="secondary-button" id="invite-cancel" type="button">Cancel</button><button class="primary-button" type="submit">Send Secure Invitation</button></div>
+        <p class="auth-status" id="invite-status" aria-live="polite"></p>
+      </form>
+    </dialog>
+
     <footer class="site-footer">Lesson Mentor is a product of <a href="https://educationunderconstruction.com" target="_blank" rel="noopener">Education Under Construction</a>.</footer>
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabaseClient.js"></script>
+    <script src="/auth.js?v=auth1"></script>
+    <script src="/admin/admin.js?v=auth1"></script>
   </body>
 </html>

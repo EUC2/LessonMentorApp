@@ -55,6 +55,57 @@ const standardsConfig = {
 
 const styleOrder = ["A", "I", "K", "R", "S", "V"];
 
+const learningStyleInstruction = {
+  V: {
+    priority: "Use a visible model, labeled example, graphic organizer, or color-coded anchor before independent work.",
+    hook: "Open with a visible example or image that previews the final thinking.",
+    directTeach: "Keep a completed visual model visible while naming each step.",
+    guidedPractice: "Record the shared response on a visible organizer as students contribute.",
+    independentPractice: "Provide the matching organizer and a completed model students can reference.",
+    assessment: "Allow students to support the response with a labeled sketch, model, chart, or diagram."
+  },
+  A: {
+    priority: "Use concise teacher think-alouds, oral rehearsal, and opportunities to explain reasoning before writing.",
+    hook: "Invite students to hear and discuss a short question, example, or prediction.",
+    directTeach: "Think aloud through the decision-making process and repeat the key academic language.",
+    guidedPractice: "Build in partner rehearsal before recording the shared answer.",
+    independentPractice: "Let students quietly rehearse the response aloud before writing or submitting it.",
+    assessment: "Include a brief oral explanation or teacher conference when appropriate."
+  },
+  R: {
+    priority: "Provide written steps, precise vocabulary, sentence frames, and space to annotate or organize notes.",
+    hook: "Post the lesson question and key words where students can read and mark them.",
+    directTeach: "Pair the model with numbered written steps and an exemplar response.",
+    guidedPractice: "Create a shared written response and identify the words that make it accurate.",
+    independentPractice: "Provide a structured written organizer with clear labels and response frames.",
+    assessment: "Collect a concise written explanation using the lesson vocabulary."
+  },
+  K: {
+    priority: "Use tools, movement, sorting, modeling, or hands-on rehearsal at the point where the concept is introduced.",
+    hook: "Begin with an object, tool, movement, or quick sort students can physically examine.",
+    directTeach: "Model the process with real materials while students mirror the critical action.",
+    guidedPractice: "Move students into a short hands-on trial with immediate corrective feedback.",
+    independentPractice: "Use stations, manipulatives, cards, or a build-and-record task tied to the objective.",
+    assessment: "Observe a demonstrated process and require students to explain what the action shows."
+  },
+  I: {
+    priority: "Protect quiet processing time, give a clear individual target, and allow students to begin independently before sharing.",
+    hook: "Give students private think time before asking for discussion or public responses.",
+    directTeach: "Provide a clear success target students can monitor on their own.",
+    guidedPractice: "Add a brief individual attempt before partner or whole-class correction.",
+    independentPractice: "Offer an uninterrupted work interval with a visible checklist and optional extension.",
+    assessment: "Include an individual response that is not dependent on group performance."
+  },
+  S: {
+    priority: "Use purposeful partner talk, peer coaching, or a defined small-group role without making all evidence group-dependent.",
+    hook: "Let students compare an initial idea with a partner after private think time.",
+    directTeach: "Pause for students to restate the modeled step to a partner.",
+    guidedPractice: "Use assigned roles and a structured partner or small-group protocol.",
+    independentPractice: "Allow a peer checkpoint before each student completes an individual response.",
+    assessment: "Include peer explanation or feedback, followed by individual evidence of learning."
+  }
+};
+
 const iepSupports = [
   {
     id: "sentence-frames",
@@ -374,11 +425,11 @@ const classProfiles = {
 };
 
 const classAccessCodes = {
-  "1": { code: "LM-P1-SCI", gradeBand: "g35", grade: "4", subject: "science", supports: ["sentence-frames", "chunked-directions", "movement-break", "teacher-checkin", "graphic-organizer"] },
+  "1": { code: "LM-P1-SCI", courseKey: "grade4-science", gradeBand: "g35", grade: "4", subject: "science", supports: ["sentence-frames", "chunked-directions", "movement-break", "teacher-checkin", "graphic-organizer"] },
   "2": { code: "LM-P2-ELA", gradeBand: "g35", grade: "5", subject: "ela", supports: ["sentence-frames", "chunked-directions", "teacher-checkin", "graphic-organizer", "read-aloud"] },
   "3": { code: "LM-P3-SCI", gradeBand: "g35", grade: "3", subject: "science", supports: ["chunked-directions", "movement-break", "teacher-checkin", "graphic-organizer"] },
   "4": { code: "LM-P4-MATH", gradeBand: "g35", grade: "4", subject: "math", supports: ["chunked-directions", "movement-break", "teacher-checkin"] },
-  "5": { code: "LM-P5-SCI", gradeBand: "g35", grade: "4", subject: "science", supports: ["sentence-frames", "teacher-checkin", "graphic-organizer"] },
+  "5": { code: "LM-P5-SCI", courseKey: "grade4-science", gradeBand: "g35", grade: "4", subject: "science", supports: ["sentence-frames", "teacher-checkin", "graphic-organizer"] },
   "6": { code: "LM-P6-PLAN", gradeBand: "g35", grade: "4", subject: "stem", supports: [] },
   "7": { code: "LM-P7-SS", gradeBand: "g35", grade: "5", subject: "social-studies", supports: ["sentence-frames", "chunked-directions", "teacher-checkin", "graphic-organizer", "read-aloud"] },
   "8": { code: "LM-P8-ENR", gradeBand: "g35", grade: "4", subject: "stem", supports: ["movement-break", "graphic-organizer"] },
@@ -602,6 +653,11 @@ document.addEventListener("DOMContentLoaded", () => {
   applyInitialHashRoute();
 });
 
+document.addEventListener("lessonmentor:authenticated", () => {
+  applyPortalMode();
+  applyInitialHashRoute();
+});
+
 function on(id, eventName, handler) {
   document.getElementById(id)?.addEventListener(eventName, handler);
 }
@@ -628,8 +684,12 @@ function setupMobileWarning() {
 
 function getPortalMode() {
   const hash = window.location.hash.replace("#", "");
+  const roles = window.LessonMentorSession?.roles || [];
   if (hash === "student-view") return "student";
-  if (hash === "admin-view") return "admin";
+  if (hash === "admin-view") {
+    return roles.includes("school_admin") || roles.includes("owner_admin") ? "admin" : "teacher";
+  }
+  if (roles.includes("school_admin") && !roles.includes("teacher")) return "admin";
   return "teacher";
 }
 
@@ -669,9 +729,7 @@ function bindNavigation() {
     renderAll();
   });
 
-  on("logout-demo", "click", () => {
-    window.location.href = "/";
-  });
+  // auth.js revokes the Supabase session before returning to the public site.
 
   on("go-home", "click", () => {
     setActiveView("teacher");
@@ -1243,16 +1301,16 @@ function titleFromPrompt(text = "") {
     .trim();
   const lower = compact.toLowerCase();
   if (/metric|measurement|balance|grams?|kilograms?|centimeters?|meters?/.test(lower)) {
-    return "Metric Measurement Lab Lesson Plan";
+    return "Metric Measurement Lab";
   }
   if (/soccer|kicking a ball|kick a ball/.test(lower)) {
-    return "Introductory Soccer Skills Lesson Plan";
+    return "Soccer Skills Kickoff";
   }
   if (/historical figure|research project/.test(lower)) {
-    return "Historical Figure Research Project Lesson Plan";
+    return "Historical Figure Research";
   }
   if (/erosion|weathering|landforms?/.test(lower)) {
-    return "Erosion And Landform Change Lesson Plan";
+    return "Erosion Evidence Lab";
   }
   const cleaned = compact
     .replace(/^(i'?d|i would|i'?m|i am)\s+(like|looking|need|want)\s+(for\s+)?(an?|the)?\s*/i, "")
@@ -1262,8 +1320,35 @@ function titleFromPrompt(text = "") {
     .split(/[.;!?]/)[0]
     .replace(/\bthat\s+(introduces|uses|includes)\b/gi, "$1")
     .trim();
-  const words = cleaned.split(/\s+/).filter(Boolean).slice(0, 7).join(" ");
-  return `${titleCase(words || "Generated Lesson")} Lesson Plan`;
+  const words = cleaned
+    .replace(/\b(for|with)\s+(students?|learners?|a\s+class(room)?)\b.*$/i, "")
+    .replace(/\b(lesson|unit)\s+plan\b/gi, "")
+    .replace(/\b(grade|grades)\s+\d+(?:\s*-\s*\d+)?\b/gi, "")
+    .replace(/\b\d+(?:st|nd|rd|th)\s+grade\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 5)
+    .join(" ");
+  return titleCase(words || "Generated Lesson");
+}
+
+function normalizeLessonTitle(title = "", sourceText = "") {
+  const combined = `${title} ${sourceText}`.trim();
+  if (/metric|measurement|balance|grams?|kilograms?|centimeters?|meters?/i.test(combined)) return "Metric Measurement Lab";
+  if (/soccer|kicking a ball|kick a ball/i.test(combined)) return "Soccer Skills Kickoff";
+  if (/historical figure|research project/i.test(combined)) return "Historical Figure Research";
+  if (/erosion|weathering|landforms?/i.test(combined)) return "Erosion Evidence Lab";
+
+  const cleanTitle = String(title || "")
+    .replace(/\b(lesson|unit)\s+plan\b/gi, "")
+    .replace(/\b(for|with)\s+(students?|learners?|a\s+class(room)?)\b.*$/i, "")
+    .replace(/\b(grade|grades)\s+\d+(?:\s*-\s*\d+)?\b/gi, "")
+    .replace(/\b\d+(?:st|nd|rd|th)\s+grade\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return titleCase(cleanTitle.split(/\s+/).filter(Boolean).slice(0, 5).join(" ") || "Generated Lesson");
 }
 
 function deriveLessonTitle() {
@@ -1307,6 +1392,130 @@ function titleCase(text) {
     .replace(/\bStem\b/g, "STEM");
 }
 
+function getClassProfileSnapshot(period) {
+  const source = classProfiles[period]?.profile || {};
+  return styleOrder.reduce((snapshot, key) => {
+    snapshot[key] = Math.max(0, Number(source[key] || 0));
+    return snapshot;
+  }, {});
+}
+
+function getLearningStyleRanking(profile) {
+  return Object.keys(styles)
+    .map(key => ({ key, name: styles[key].name, percent: Number(profile[key] || 0) }))
+    .sort((a, b) => b.percent - a.percent || styleOrder.indexOf(a.key) - styleOrder.indexOf(b.key));
+}
+
+function buildClassLearningStylePlan(profile) {
+  const ranking = getLearningStyleRanking(profile);
+  const primary = ranking[0];
+  const secondary = ranking[1];
+  const primaryGuide = learningStyleInstruction[primary.key];
+  const secondaryGuide = learningStyleInstruction[secondary.key];
+  return {
+    ranking,
+    primary,
+    secondary,
+    summary: `${primary.name} ${primary.percent}% is the primary class pathway; ${secondary.name} ${secondary.percent}% is secondary. The lesson keeps access points for ${ranking.slice(2).map(item => `${item.name} ${item.percent}%`).join(", ")}.`,
+    priorities: [
+      `${primary.name} (${primary.percent}%): ${primaryGuide.priority}`,
+      `${secondary.name} (${secondary.percent}%): ${secondaryGuide.priority}`
+    ],
+    moves: {
+      hook: `${primaryGuide.hook} ${secondaryGuide.hook}`,
+      directTeach: `${primaryGuide.directTeach} ${secondaryGuide.directTeach}`,
+      guidedPractice: `${primaryGuide.guidedPractice} ${secondaryGuide.guidedPractice}`,
+      independentPractice: `${primaryGuide.independentPractice} ${secondaryGuide.independentPractice}`,
+      assessment: `${primaryGuide.assessment} ${secondaryGuide.assessment}`
+    }
+  };
+}
+
+function getMatchingCoursePeriods(basePeriod = appState.activePeriod) {
+  const baseConfig = classAccessCodes[basePeriod];
+  if (!baseConfig) return [basePeriod];
+  const baseCourseKey = baseConfig.courseKey || `${baseConfig.grade}:${baseConfig.subject}`;
+  const matches = Object.keys(classProfiles).filter(period => {
+    const config = classAccessCodes[period];
+    if (!config) return false;
+    const courseKey = config.courseKey || `${config.grade}:${config.subject}`;
+    return courseKey === baseCourseKey;
+  });
+  return matches.length ? matches : [basePeriod];
+}
+
+function scoreStrategyForClass(strategy, profile, keywords = appState.lessonKeywords) {
+  const ranking = getLearningStyleRanking(profile);
+  const modalityCoverage = strategy.modalities.reduce((sum, modality) => sum + Number(profile[modality] || 0), 0);
+  const primaryBonus = strategy.modalities.includes(ranking[0]?.key) ? 20 : 0;
+  const secondaryBonus = strategy.modalities.includes(ranking[1]?.key) ? 10 : 0;
+  const keywordFit = keywords.filter(word => strategy.keywords.includes(word)).length * 12;
+  return modalityCoverage + primaryBonus + secondaryBonus + keywordFit;
+}
+
+function selectStrategiesForClass(period, keywords = appState.lessonKeywords) {
+  const profile = getClassProfileSnapshot(period);
+  const ranking = getLearningStyleRanking(profile);
+  const candidates = strategyLibrary
+    .filter(strategy => appState.enabledSystems[strategy.system])
+    .map(strategy => ({ ...strategy, score: scoreStrategyForClass(strategy, profile, keywords) }))
+    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
+  const selected = [];
+  ranking.slice(0, 2).forEach(style => {
+    const match = candidates.find(strategy => strategy.modalities.includes(style.key) && !selected.some(item => item.title === strategy.title));
+    if (match) selected.push(match);
+  });
+  candidates.forEach(strategy => {
+    if (selected.length < 4 && !selected.some(item => item.title === strategy.title)) selected.push(strategy);
+  });
+  return selected.slice(0, 4);
+}
+
+function buildClassSpecificSubmission(period, shared) {
+  const config = getClassConfig(period);
+  const classProfile = getClassProfileSnapshot(period);
+  const learningStylePlan = buildClassLearningStylePlan(classProfile);
+  const matchedStrategies = selectStrategiesForClass(period, shared.keywords);
+  const supportIds = getSelectedSupportIds(period);
+  const selectedSupportIds = new Set(supportIds);
+  const supportInserts = iepSupports.filter(support => selectedSupportIds.has(support.id));
+  const selectedSystems = [...shared.selectedSystems];
+  if (supportInserts.length) selectedSystems.push("IEP Supports");
+  const submission = {
+    id: `${shared.generationGroupId}-${period}`,
+    generationGroupId: shared.generationGroupId,
+    classId: period,
+    title: shared.lessonTitle,
+    period: classProfiles[period]?.name || `Period ${period}`,
+    classCode: config.code,
+    systems: selectedSystems,
+    status: "ready",
+    date: "Today",
+    expires: "15 days",
+    expired: false,
+    educator: shared.educator,
+    teachingState: shared.teachingState,
+    standardsSource: shared.standardsSource,
+    grade: config.grade || shared.grade,
+    subject: config.subject || shared.subject,
+    objective: shared.objective,
+    lessonText: shared.lessonText,
+    lessonContext: shared.lessonContext,
+    standards: shared.standards.map(item => ({ ...item })),
+    supportIds: [...supportIds],
+    supportInserts: supportInserts.map(item => ({ label: item.label, insert: item.insert })),
+    organizers: [...shared.organizers],
+    strategies: matchedStrategies.map(item => item.title),
+    strategyMatches: matchedStrategies.map(item => ({ title: item.title, system: item.system, modalities: [...item.modalities], score: item.score })),
+    keywords: [...shared.keywords],
+    uploadedFiles: shared.uploadedFiles.map(file => ({ ...file })),
+    classProfile,
+    learningStylePlan
+  };
+  submission.unitDays = buildUnitDays(submission);
+  return submission;
+}
+
 async function generateLessonPlan() {
   const hasUpload = appState.uploadedFiles.length > 0;
   const lessonText = document.getElementById("lesson-text");
@@ -1329,47 +1538,22 @@ async function generateLessonPlan() {
   }
 
   analyzeLesson();
-  const profile = classProfiles[appState.activePeriod].profile;
-  const matched = strategyLibrary
-    .filter(strategy => appState.enabledSystems[strategy.system])
-    .map(strategy => ({ ...strategy, score: strategyScore(strategy, profile) }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
-  const primaryMove = matched[0]?.title || "a visual model";
-  const secondaryMove = matched[1]?.title || "structured partner talk";
-  const selectedSupportIds = new Set(getSelectedSupportIds(appState.activePeriod));
-  const supportInserts = iepSupports.filter(support => selectedSupportIds.has(support.id));
   const organizers = selectOrganizers();
   const standards = getStandardMatches();
-  const objectiveStatement = buildObjectiveStatement();
-  const lessonTitle = deriveLessonTitle();
-  const lessonContext = inferLessonContext();
   const teachingState = getTeachingState();
-  const grade = document.getElementById("lesson-grade")?.value || "";
-  const subject = document.getElementById("lesson-subject")?.value || "";
-  const selectedSystemLabels = systems
-    .filter(system => appState.enabledSystems[system.id])
-    .map(system => system.label);
-  if (supportInserts.length) selectedSystemLabels.push("IEP Supports");
-
-  const submission = {
-    id: `submission-${Date.now()}`,
-    title: lessonTitle,
-    period: classProfiles[appState.activePeriod].name,
-    classCode: getClassConfig(appState.activePeriod).code,
-    systems: selectedSystemLabels,
-    status: "ready",
-    date: "Today",
-    expires: "15 days",
-    expired: false,
+  const generationGroupId = `generation-${Date.now()}`;
+  const targetPeriods = getMatchingCoursePeriods(appState.activePeriod);
+  const shared = {
+    generationGroupId,
+    lessonTitle: normalizeLessonTitle(deriveLessonTitle(), getAnalyzableLessonText()),
     educator: getEducatorName(),
     teachingState,
     standardsSource: standards[0]?.sourceLabel || getStandardsPackage(teachingState).label,
-    grade,
-    subject,
-    objective: objectiveStatement,
+    grade: document.getElementById("lesson-grade")?.value || "",
+    subject: document.getElementById("lesson-subject")?.value || "",
+    objective: buildObjectiveStatement(),
     lessonText: appState.lessonText,
-    lessonContext,
+    lessonContext: inferLessonContext(),
     standards: standards.map(item => ({
       id: item.id,
       framework: item.framework,
@@ -1377,30 +1561,33 @@ async function generateLessonPlan() {
       sourceLabel: item.sourceLabel,
       fallbackNote: item.fallbackNote
     })),
-    supportInserts: supportInserts.map(item => ({ label: item.label, insert: item.insert })),
-    organizers,
-    strategies: matched.map(item => item.title),
-    keywords: appState.lessonKeywords,
-    uploadedFiles: [...appState.uploadedFiles]
+    selectedSystems: systems
+    .filter(system => appState.enabledSystems[system.id])
+      .map(system => system.label),
+    organizers: [...organizers],
+    keywords: [...appState.lessonKeywords],
+    uploadedFiles: appState.uploadedFiles.map(file => ({ ...file }))
   };
-
-  appState.submissions.unshift(submission);
+  const submissions = targetPeriods.map(period => buildClassSpecificSubmission(period, shared));
+  appState.submissions.unshift(...submissions);
   renderSubmissionHistory();
-  await persistLessonSubmission(submission, standards, supportInserts, organizers);
+  await Promise.all(submissions.map(persistLessonSubmission));
 }
 
-async function persistLessonSubmission(submission, standards, supportInserts, organizers) {
+async function persistLessonSubmission(submission) {
   const api = window.LessonMentorAPI;
   if (!api) return;
 
   const payload = {
     title: submission.title,
-    class_period: classProfiles[appState.activePeriod].name,
-    grade: document.getElementById("lesson-grade")?.value || null,
-    subject: document.getElementById("lesson-subject")?.value || null,
+    class_period: submission.period,
+    target_class_id: submission.classId,
+    generation_group_id: submission.generationGroupId,
+    grade: submission.grade || null,
+    subject: submission.subject || null,
     objective_style: document.getElementById("objective-style")?.value || null,
     selected_systems: submission.systems,
-    matched_standards: standards.map(item => ({
+    matched_standards: submission.standards.map(item => ({
       id: item.id,
       framework: item.framework,
       text: item.text,
@@ -1409,11 +1596,14 @@ async function persistLessonSubmission(submission, standards, supportInserts, or
     })),
     standards_state: submission.teachingState,
     standards_source: submission.standardsSource,
-    selected_supports: supportInserts.map(item => item.id),
-    teacher_code: getClassConfig(appState.activePeriod).code,
-    recommended_organizers: organizers,
-    lesson_text: appState.lessonText,
-    uploaded_files: appState.uploadedFiles,
+    selected_supports: submission.supportIds,
+    teacher_code: submission.classCode,
+    recommended_organizers: submission.organizers,
+    lesson_text: submission.lessonText,
+    uploaded_files: submission.uploadedFiles,
+    class_profile_snapshot: submission.classProfile,
+    learning_style_plan: submission.learningStylePlan,
+    matched_strategies: submission.strategyMatches,
     output_template: "Lesson Mentor Signature Template",
     output_formats: ["pdf", "docx", "google_docs_future"],
     document_status: "available",
@@ -1477,7 +1667,139 @@ function selectOrganizers() {
   return ({ science: scienceSet, ela: elaSet, math: mathSet, "social-studies": socialSet }[subject] || generalSet).slice(0, 5);
 }
 
+function getRequestedLessonDayCount(text = getAnalyzableLessonText()) {
+  const lower = String(text || "").toLowerCase();
+  const explicitDays = lower.match(/\b(\d{1,2})\s*[- ]?days?\b/);
+  if (explicitDays) return Math.min(10, Math.max(1, Number(explicitDays[1])));
+  const wordDays = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+  const writtenDays = lower.match(/\b(one|two|three|four|five|six|seven|eight|nine|ten)\s*[- ]?days?\b/);
+  if (writtenDays) return wordDays[writtenDays[1]];
+  if (/\b(one|1)\s*[- ]?week\b|\bweek\s*long\b|\bweekly\s+unit\b/.test(lower)) return 5;
+  if (/\btwo\s*[- ]?weeks?\b|\b2\s*[- ]?weeks?\b/.test(lower)) return 10;
+  return 1;
+}
+
+function buildMetricUnitDays(item) {
+  const requestedDays = getRequestedLessonDayCount(item.lessonText || item.title || getAnalyzableLessonText());
+  const days = [
+    {
+      title: "Metric Tools And Units",
+      objective: "I can match a metric tool and unit to the property I need to measure.",
+      vocabulary: "metric system, tool, unit, mass, length, volume, gram, centimeter, milliliter",
+      hook: "Display a balance, ruler, meter stick, graduated cylinder, and hand lens. Ask: What could each tool help a scientist find out?",
+      directTeach: "Model the measurement decision routine: name the property, select the tool, select the unit, then record the number and unit together.",
+      guidedPractice: "Complete the first two rows of the Tool-Unit-Property Match organizer as a class. Require students to explain each match aloud before recording it.",
+      independentPractice: "Students complete the remaining matches and write one sentence explaining why a balance measures mass in grams.",
+      assessment: "Collect the organizer and check that students correctly match mass-balance-gram, length-ruler-centimeter, and liquid volume-graduated cylinder-milliliter.",
+      worksheet: { type: "matching", title: "Tool-Unit-Property Match", directions: "Draw a line or write the matching letter. Then explain one match in a complete sentence." },
+      sample: "Completed model: Mass -> balance -> gram (g). A balance compares mass, so the measurement is recorded in grams."
+    },
+    {
+      title: "Measuring Mass",
+      objective: "I can use a balance to measure and record mass in grams.",
+      vocabulary: "mass, balance, gram, calibrate, estimate, compare",
+      hook: "Hold up two objects with similar size but different mass. Ask students to predict which has greater mass and explain their reasoning.",
+      directTeach: "Demonstrate checking that the balance begins at zero, placing one object carefully, waiting for the reading to settle, and recording the value with g.",
+      guidedPractice: "Measure one classroom object together. Students estimate first, then record the actual mass and calculate or describe the difference.",
+      independentPractice: "At stations, students measure three objects and complete the Mass Investigation recording sheet.",
+      assessment: "Observe tool use and collect one accurate mass measurement written with both the number and g.",
+      worksheet: { type: "mass", title: "Mass Investigation", directions: "Estimate first. Measure each object with a balance. Record the number and unit, then compare the objects." },
+      sample: "Completed model: Marker | estimate 12 g | actual mass 15 g | The marker was 3 g heavier than my estimate."
+    },
+    {
+      title: "Measuring Length",
+      objective: "I can measure length in centimeters and choose an appropriate metric tool.",
+      vocabulary: "length, centimeter, meter, ruler, meter stick, endpoint, precision",
+      hook: "Show a pencil and a classroom door. Ask whether the same tool is the best choice for both measurements.",
+      directTeach: "Model lining up the zero mark, keeping the tool straight, reading the endpoint, and recording cm or m.",
+      guidedPractice: "Measure a notebook as a class and diagnose one intentionally incorrect ruler placement.",
+      independentPractice: "Students measure four classroom objects, select ruler or meter stick, and justify one tool choice.",
+      assessment: "Check two measurements for correct alignment, reasonable precision, and written metric units.",
+      worksheet: { type: "length", title: "Length Measurement Lab", directions: "Choose the best tool. Start at zero. Measure carefully and record the number with cm or m." },
+      sample: "Completed model: Science notebook | ruler | 28 cm | A ruler is appropriate because the notebook is shorter than one meter."
+    },
+    {
+      title: "Observe And Compare",
+      objective: "I can use a hand lens and metric data to make a precise comparison.",
+      vocabulary: "observe, hand lens, texture, detail, compare, greater than, less than",
+      hook: "Reveal a small natural object first without and then with a hand lens. Ask what new evidence becomes visible.",
+      directTeach: "Model a labeled close-observation sketch and combine it with a measurement sentence: The object has a mass of __ g and appears __ under the hand lens.",
+      guidedPractice: "Create one class observation using a real object. Sort statements into precise observations and opinions.",
+      independentPractice: "Students observe and compare two objects using a hand lens plus one metric measurement.",
+      assessment: "Collect one labeled sketch and one comparison sentence that includes measured data.",
+      worksheet: { type: "observation", title: "Metric Observation And Comparison", directions: "Sketch what you see with the hand lens. Add labels, record one metric measurement, and write a comparison sentence." },
+      sample: "Completed model: Object A has a mass of 18 g and a rough, ridged surface. It is 6 g heavier than Object B."
+    },
+    {
+      title: "Metric Measurement Challenge",
+      objective: "I can select metric tools, collect accurate data, and explain my measurement choices.",
+      vocabulary: "measure, data, evidence, accuracy, mass, length, volume, compare",
+      hook: "Present a mystery-object challenge: teams must create a precise scientific description without naming the object.",
+      directTeach: "Model planning which properties to measure and checking that every number has a unit.",
+      guidedPractice: "Teams plan one sample measurement together and use a checklist to verify tool, unit, procedure, and recording accuracy.",
+      independentPractice: "Students complete the Metric Challenge Report for a mystery object and use their data to write a final identification clue.",
+      assessment: "Score the report for appropriate tools, correct units, complete data, and a conclusion supported by measurements and observations.",
+      worksheet: { type: "challenge", title: "Metric Measurement Challenge Report", directions: "Plan, measure, observe, and report. Every number must include a metric unit. Use your data in the final clue." },
+      sample: "Completed model: Tool-balance; property-mass; result-24 g. Tool-ruler; property-length; result-9 cm. Clue: My object is 9 cm long and has a mass of 24 g."
+    }
+  ];
+  return Array.from({ length: requestedDays }, (_, index) => ({
+    day: index + 1,
+    ...(days[index] || {
+      ...days[days.length - 1],
+      title: `Metric Application And Review ${index + 1}`,
+      objective: "I can apply metric measurement skills accurately in a new investigation."
+    })
+  }));
+}
+
+function buildGenericUnitDays(item) {
+  const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
+  const requestedDays = getRequestedLessonDayCount(item.lessonText || item.title || getAnalyzableLessonText());
+  const stages = ["Build Background", "Teacher Model", "Guided Investigation", "Independent Application", "Synthesis And Assessment"];
+  return Array.from({ length: requestedDays }, (_, index) => ({
+    day: index + 1,
+    title: `${stages[index] || `Application Day ${index + 1}`}: ${titleCase(context.topic)}`,
+    objective: item.objective || `I can ${context.objective}.`,
+    vocabulary: context.language,
+    hook: context.hook,
+    directTeach: context.directTeach,
+    guidedPractice: context.guidedPractice,
+    independentPractice: context.independentPractice,
+    assessment: context.assessment,
+    worksheet: { type: "general", title: `${stages[index] || "Application"} Organizer`, directions: "Follow each step, record evidence from the lesson, and explain your thinking in complete sentences." },
+    sample: `Completed model: Key idea - ${titleCase(context.topic)}. Evidence - one accurate detail from the lesson. Explanation - this detail supports the lesson objective.`
+  }));
+}
+
+function buildUnitDays(item) {
+  const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
+  return /metric measurement/.test(String(context.topic || "").toLowerCase()) ? buildMetricUnitDays(item) : buildGenericUnitDays(item);
+}
+
 function getStudentMaterialsPacket(item) {
+  const unitDays = item.unitDays?.length ? item.unitDays : buildUnitDays(item);
+  return unitDays.flatMap(day => [
+    {
+      day: day.day,
+      kind: "student",
+      type: day.worksheet.type,
+      title: `Day ${day.day}: ${day.worksheet.title}`,
+      purpose: "Printable student organizer/worksheet",
+      directions: day.worksheet.directions,
+      details: `Aligned to ${day.title}. Students use this page during the day's guided or independent task.`
+    },
+    {
+      day: day.day,
+      kind: "teacher",
+      type: "sample",
+      title: `Day ${day.day}: Completed Teacher Sample`,
+      purpose: "Completed model and answer reference",
+      directions: "Use this example while modeling. Do not distribute as the student response page unless a completed reference is appropriate.",
+      details: day.sample
+    }
+  ]);
+  /*
   const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
   const topic = String(context.topic || "").toLowerCase();
   const organizers = item.organizers?.length ? item.organizers : selectOrganizers();
@@ -1500,6 +1822,7 @@ function getStudentMaterialsPacket(item) {
     purpose: "Student support attachment",
     details: "Attach this organizer or worksheet where it directly supports the lesson task and selected class profile."
   }));
+  */
 }
 
 function formatMaterialsPacketText(item) {
@@ -1548,11 +1871,14 @@ function renderSubmissionHistory() {
     return;
   }
 
+  visibleSubmissions.forEach(item => {
+    item.title = normalizeLessonTitle(item.title, item.lessonText || "");
+  });
   submissionHistory.innerHTML = visibleSubmissions.map(item => `
     <div class="history-row" data-submission-row="${item.id || ""}">
       <div>
         <strong>${item.title}</strong>
-        <p>${item.date} · ${item.period} · ${item.systems.join(", ")}</p>
+        <p>${item.date} · ${item.period} · ${formatSubmissionProfile(item)} · ${item.systems.join(", ")}</p>
       </div>
       <div class="document-actions">
         ${availabilityPill(item)}
@@ -1570,6 +1896,11 @@ function renderSubmissionHistory() {
   submissionHistory.querySelectorAll("[data-output-action]").forEach(button => {
     button.addEventListener("click", handleSubmissionAction);
   });
+}
+
+function formatSubmissionProfile(item) {
+  const plan = item.learningStylePlan || buildClassLearningStylePlan(item.classProfile || getClassProfileSnapshot(item.classId || appState.activePeriod));
+  return `${plan.primary.name} ${plan.primary.percent}% / ${plan.secondary.name} ${plan.secondary.percent}%`;
 }
 
 function handleSubmissionAction(event) {
@@ -1768,26 +2099,307 @@ function previewGeneratedLesson(item) {
 
 function downloadGeneratedPdf(item) {
   const pdfBlob = makeLessonPlanPdf(item);
-  downloadBlob(pdfBlob, safeFilename(item.title, "pdf"));
+  downloadBlob(pdfBlob, safeFilename(`${item.title}-${item.period || "class"}`, "pdf"));
 }
 
 function downloadGeneratedDocx(item) {
-  const xmlLines = buildGeneratedLessonLines(item).map(line => {
-    const escaped = escapeXml(line || " ");
-    if (!line) return `<w:p/>`;
-    const isHeading = !line.startsWith("-") && ["Lesson Mentor Generated Draft", item.title, "Auto Standards", "Teacher-Ready Standard Expectation", "Board Language", "Strategies To Include", "Strategy Integrations/IEP", "Recommended Graphic Organizers And Worksheets", "Attached Student Materials Packet", "Lesson-Specific Teaching Flow"].includes(line);
-    const isCopyright = line === copyrightNotice;
-    return `<w:p><w:r><w:rPr>${isHeading ? "<w:b/>" : ""}${isCopyright ? '<w:color w:val="8A94A6"/><w:sz w:val="16"/>' : ""}</w:rPr><w:t xml:space="preserve">${escaped}</w:t></w:r></w:p>`;
-  }).join("");
-  const files = {
-    "[Content_Types].xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,
-    "_rels/.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,
-    "word/document.xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${xmlLines}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720"/></w:sectPr></w:body></w:document>`
-  };
-  downloadBlob(makeZip(files), safeFilename(item.title, "docx"));
+  const completeItem = { ...item, unitDays: item.unitDays?.length ? item.unitDays : buildUnitDays(item) };
+  downloadBlob(makeZip(buildCompleteLessonDocxFiles(completeItem)), safeFilename(`${completeItem.title}-${completeItem.period || "class"}`, "docx"));
 }
 
-function makeLessonPlanPdf(item) {
+function buildCompleteLessonDocxFiles(item) {
+  return {
+    "[Content_Types].xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`,
+    "_rels/.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,
+    "word/_rels/document.xml.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdNumbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/></Relationships>`,
+    "word/styles.xml": buildLessonDocxStyles(),
+    "word/numbering.xml": buildLessonDocxNumbering(),
+    "word/footer1.xml": buildLessonDocxFooter(),
+    "word/document.xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${buildCompleteLessonDocxBody(item)}${wordSectionProperties()}</w:body></w:document>`
+  };
+}
+
+function buildCompleteLessonDocxBody(item) {
+  const days = item.unitDays?.length ? item.unitDays : buildUnitDays(item);
+  const standards = item.standards?.length ? item.standards : [];
+  const subject = subjectLabel(item.subject || "");
+  const grade = item.grade || "";
+  const period = item.period || classProfiles[appState.activePeriod]?.name || "Selected Class";
+  const learningPlan = item.learningStylePlan || buildClassLearningStylePlan(item.classProfile || getClassProfileSnapshot(item.classId || appState.activePeriod));
+  const standardsRows = standards.length
+    ? standards.map(standard => [{ text: standard.id, bold: true }, `${standard.framework}: ${standard.text}`])
+    : [[{ text: "Standards Match", bold: true }, "Standards will be finalized by the lesson-generation service."]];
+  const overviewRows = days.map(day => [
+    { text: `Day ${day.day}`, bold: true }, day.title, day.objective,
+    `${day.worksheet.title}\nCompleted Teacher Sample`
+  ]);
+  let body = [
+    wordParagraph("Lesson Mentor", { style: "Brand" }),
+    wordParagraph(item.title || "Generated Lesson Unit", { style: "Title" }),
+    wordParagraph(`${days.length}-Day Editable Teaching Package`, { style: "Subtitle" }),
+    wordTable([
+      [wordLabelValue("Educator", item.educator || getEducatorName()), wordLabelValue("Class / Period", period)],
+      [wordLabelValue("Grade", grade), wordLabelValue("Subject", subject)]
+    ], [7380, 7380], { headerFill: "EAF7F6" }),
+    wordParagraph("Unit Objective", { style: "Heading1" }),
+    wordCallout(item.objective || days[0]?.objective || buildObjectiveStatement(), "EAF7F6", "148F8B"),
+    wordParagraph("Standards And Expectations", { style: "Heading1" }),
+    wordTable(standardsRows, [3300, 11460], { headerFill: "F5F7FA" }),
+    wordParagraph("Class Learning Profile", { style: "Heading1" }),
+    wordTable([
+      [{ text: "Primary Pathway", bold: true }, `${learningPlan.primary.name} ${learningPlan.primary.percent}%`, learningPlan.priorities[0]],
+      [{ text: "Secondary Pathway", bold: true }, `${learningPlan.secondary.name} ${learningPlan.secondary.percent}%`, learningPlan.priorities[1]],
+      [{ text: "Additional Access", bold: true }, learningPlan.ranking.slice(2).map(style => `${style.name} ${style.percent}%`).join(", "), "Retain concise access points for the remaining class profile without diluting the objective."]
+    ], [3000, 3300, 8460], { headerFill: "EAF7F6" }),
+    wordParagraph("Unit At A Glance", { style: "Heading1" }),
+    wordTable([
+      [{ text: "Day", bold: true }, { text: "Instructional Focus", bold: true }, { text: "Student Objective", bold: true }, { text: "Included Materials", bold: true }],
+      ...overviewRows
+    ], [1100, 3200, 6000, 4460], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF" })
+  ].join("");
+  days.forEach(day => {
+    body += buildDailyLessonDocx(item, day);
+    body += buildStudentWorksheetDocx(item, day);
+    body += buildTeacherSampleDocx(item, day);
+  });
+  return body;
+}
+
+function buildDailyLessonDocx(item, day) {
+  const integrations = buildDailyLessonSegments(item, day);
+  const strategies = item.strategies?.length ? item.strategies.join(", ") : item.systems?.filter(system => system !== "IEP Supports").join(", ") || "Teacher-selected strategies";
+  return [
+    wordParagraph(`Day ${day.day}: ${day.title}`, { style: "Title", pageBreakBefore: true }),
+    wordParagraph("Daily Lesson Plan", { style: "Subtitle" }),
+    wordTable([
+      [wordLabelValue("Objective", day.objective), wordLabelValue("Vocabulary", day.vocabulary)],
+      [wordLabelValue("Evidence Of Learning", day.assessment), wordLabelValue("Strategies", strategies)]
+    ], [7380, 7380], { headerFill: "EAF7F6" }),
+    wordParagraph("Teaching And Learning Moves", { style: "Heading1" }),
+    wordTable([
+      [{ text: "Segment", bold: true }, { text: "Teacher Moves", bold: true }, { text: "Student Moves", bold: true }, { text: "Language And Support", bold: true }, { text: "Strategy Integrations / IEP", bold: true }],
+      ...integrations.map(segment => [{ text: segment.segment, bold: true }, segment.teacher, segment.student, segment.language, segment.integration])
+    ], [1900, 3300, 2950, 3150, 3460], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF", firstColumnFill: "EAF7F6" }),
+    wordParagraph(`Attached For Day ${day.day}: ${day.worksheet.title} and Completed Teacher Sample`, { style: "Note" })
+  ].join("");
+}
+
+function buildDailyLessonSegments(item, day) {
+  const selectedSystems = item.systems || [];
+  const strategies = item.strategies?.length ? item.strategies : selectedSystems.filter(system => system !== "IEP Supports");
+  const supports = item.supportInserts?.length
+    ? item.supportInserts.map(support => `${support.insert} (${support.label})`)
+    : ["Provide the class supports configured for this period at the point of need. (IEP)"];
+  const strategyAt = index => strategies[index % Math.max(1, strategies.length)] || "Structured Practice";
+  const learningPlan = item.learningStylePlan || buildClassLearningStylePlan(item.classProfile || getClassProfileSnapshot(item.classId || appState.activePeriod));
+  return [
+    {
+      segment: "Hook And Background Building",
+      teacher: `${day.hook} Ask two students to restate the purpose before moving on.`,
+      student: "Notice, predict, connect to prior knowledge, and explain one observation to a partner.",
+      language: `Preview and display: ${day.vocabulary}. Use the frame: “I notice ___, so I predict ___.”`,
+      integration: `${strategyAt(0)} (${strategyIntegrationLabel(strategyAt(0), selectedSystems)}). ${learningPlan.moves.hook} ${supports[0]}`
+    },
+    {
+      segment: "Direct Teach (I Do)",
+      teacher: `${day.directTeach} Think aloud through one complete model and leave it visible.`,
+      student: "Track the model, annotate or sketch the critical step, and rehearse the success criteria.",
+      language: "Teacher prompt: “Watch how I choose the tool, complete the step, and check that the result matches the objective.”",
+      integration: `${strategyAt(1)} (${strategyIntegrationLabel(strategyAt(1), selectedSystems)}). ${learningPlan.moves.directTeach} ${supports[1] || supports[0]}`
+    },
+    {
+      segment: "Guided Work (We Do)",
+      teacher: `${day.guidedPractice} Pause after the first response to correct misconceptions before students continue.`,
+      student: "Complete the shared example, explain the reasoning aloud, and revise after feedback.",
+      language: "Require: “I selected ___ because ___.” and “My evidence is ___.”",
+      integration: `${strategyAt(2)} (${strategyIntegrationLabel(strategyAt(2), selectedSystems)}). ${learningPlan.moves.guidedPractice} ${supports[2] || supports[0]}`
+    },
+    {
+      segment: "Independent Work (You Do)",
+      teacher: `${day.independentPractice} Use the included student page and conduct a brief check-in before release.`,
+      student: "Complete the attached organizer or worksheet and use evidence from the lesson in the final response.",
+      language: "Students label every response with the required academic vocabulary, measurement unit, or source detail.",
+      integration: `${strategyAt(3)} (${strategyIntegrationLabel(strategyAt(3), selectedSystems)}). ${learningPlan.moves.independentPractice} ${supports[3] || supports[0]}`
+    },
+    {
+      segment: "Wrap-Up And Check",
+      teacher: day.assessment,
+      student: "Submit the requested evidence and explain one choice using the day’s objective language.",
+      language: "Closure frame: “Today I learned ___; my evidence is ___; next I need to ___.”",
+      integration: `${learningPlan.moves.assessment} ${supports[4] || supports[0]}`
+    }
+  ];
+}
+
+function buildStudentWorksheetDocx(item, day) {
+  const includeReflection = !["observation", "challenge"].includes(day.worksheet.type);
+  return [
+    wordParagraph(`Day ${day.day} Student Page`, { style: "Brand", pageBreakBefore: true }),
+    wordParagraph(day.worksheet.title, { style: "Title" }),
+    wordTable([["Name: __________________________________", "Date: __________________", "Class: __________________"]], [6000, 4380, 4380]),
+    wordCallout(day.worksheet.directions, "EAF7F6", "148F8B"),
+    buildWorksheetDocxBody(day, false),
+    includeReflection ? wordParagraph("Reflection", { style: "Heading1" }) : "",
+    includeReflection ? wordResponseBox("What did you learn, and what evidence or measurement supports your answer?", 4) : ""
+  ].join("");
+}
+
+function buildTeacherSampleDocx(item, day) {
+  return [
+    wordParagraph(`Day ${day.day} Teacher Reference`, { style: "Brand", pageBreakBefore: true }),
+    wordParagraph(`${day.worksheet.title}: Completed Sample`, { style: "Title" }),
+    wordCallout("Use this completed example while modeling expectations. Adapt the values or content to match the materials in your classroom.", "FFF2D8", "D18416"),
+    buildWorksheetDocxBody(day, true),
+    wordParagraph("Teacher Prompts", { style: "Heading1" }),
+    wordBullet("What tool, source, or strategy did you choose, and why?"),
+    wordBullet("Where is the evidence in your response?"),
+    wordBullet("What would make this answer more precise?"),
+    wordParagraph("Success Criteria", { style: "Heading1" }),
+    wordBullet("The response addresses the daily objective."),
+    wordBullet("Academic vocabulary, units, or source details are used accurately."),
+    wordBullet("The student explains the evidence instead of listing an unsupported answer.")
+  ].join("");
+}
+
+function buildWorksheetDocxBody(day, completed) {
+  const blank = completed ? "Completed Example" : "Student Response";
+  if (day.worksheet.type === "matching") {
+    const rows = completed
+      ? [["Mass", "Balance", "Gram (g)", "A balance measures mass."], ["Length", "Ruler", "Centimeter (cm)", "A ruler measures short lengths."], ["Liquid Volume", "Graduated Cylinder", "Milliliter (mL)", "A graduated cylinder measures liquid volume."]]
+      : Array.from({ length: 5 }, () => ["", "", "", ""]);
+    return wordTable([[{ text: "Property", bold: true }, { text: "Tool", bold: true }, { text: "Metric Unit", bold: true }, { text: "Why This Match Works", bold: true }], ...rows], [2700, 3000, 3000, 6060], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF", minCellLines: completed ? 1 : 2 });
+  }
+  if (day.worksheet.type === "mass") {
+    const rows = completed
+      ? [["Marker", "12 g", "15 g", "3 g heavier than my estimate"], ["Eraser", "8 g", "7 g", "1 g lighter than my estimate"], ["Glue stick", "22 g", "25 g", "3 g heavier than my estimate"]]
+      : Array.from({ length: 4 }, () => ["", "", "", ""]);
+    return wordTable([[{ text: "Object", bold: true }, { text: "Estimate", bold: true }, { text: "Actual Mass", bold: true }, { text: "Comparison", bold: true }], ...rows], [3300, 3000, 3000, 5460], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF", minCellLines: completed ? 1 : 2 });
+  }
+  if (day.worksheet.type === "length") {
+    const rows = completed
+      ? [["Science notebook", "Ruler", "28 cm", "A ruler works because it is shorter than 1 meter."], ["Classroom door", "Meter stick", "2 m", "A meter stick is efficient for a large object."]]
+      : Array.from({ length: 4 }, () => ["", "", "", ""]);
+    return wordTable([[{ text: "Object", bold: true }, { text: "Best Tool", bold: true }, { text: "Measurement", bold: true }, { text: "Explain Your Tool Choice", bold: true }], ...rows], [3200, 3000, 3000, 5560], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF", minCellLines: completed ? 1 : 2 });
+  }
+  if (day.worksheet.type === "observation") {
+    return [
+      wordTable([[wordLabelValue("Object A", completed ? "Pine cone" : ""), wordLabelValue("Metric Measurement", completed ? "18 g" : "")]], [7380, 7380], { minCellLines: 2 }),
+      wordResponseBox(completed ? "Labeled observation: rough overlapping scales; pointed tip; dark brown color." : "Close-observation sketch and labels", completed ? 4 : 8),
+      wordResponseBox(completed ? day.sample : "Comparison sentence using measured data", completed ? 3 : 5)
+    ].join("");
+  }
+  if (day.worksheet.type === "challenge") {
+    const rows = completed
+      ? [["Mass", "Balance", "24 g", "Checked at zero first"], ["Length", "Ruler", "9 cm", "Started at the zero mark"], ["Surface", "Hand lens", "Smooth with one seam", "Labeled close observation"]]
+      : Array.from({ length: 4 }, () => ["", "", "", ""]);
+    return wordTable([[{ text: "Property", bold: true }, { text: "Tool", bold: true }, { text: "Result", bold: true }, { text: "Accuracy Check / Observation", bold: true }], ...rows], [2800, 2800, 2800, 6360], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF", minCellLines: completed ? 1 : 2 }) + wordResponseBox(completed ? day.sample : "Final identification clue using your data", completed ? 3 : 5);
+  }
+  return wordTable([
+    [{ text: "Lesson Step", bold: true }, { text: blank, bold: true }],
+    ["Key idea or question", completed ? day.sample : ""],
+    ["Evidence, example, or data", completed ? day.assessment : ""],
+    ["Explanation", completed ? `This evidence supports the objective: ${day.objective}` : ""]
+  ], [4200, 10560], { firstRowHeader: true, headerFill: "163A70", headerColor: "FFFFFF", minCellLines: completed ? 2 : 5 });
+}
+
+function buildLessonDocxStyles() {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    <w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="20"/><w:color w:val="202938"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>
+    <w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="20"/></w:rPr></w:style>
+    <w:style w:type="paragraph" w:styleId="Brand"><w:name w:val="Brand"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:after="80"/></w:pPr><w:rPr><w:b/><w:color w:val="148F8B"/><w:sz w:val="22"/><w:caps/></w:rPr></w:style>
+    <w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="0" w:after="100"/></w:pPr><w:rPr><w:b/><w:color w:val="163A70"/><w:sz w:val="36"/></w:rPr></w:style>
+    <w:style w:type="paragraph" w:styleId="Subtitle"><w:name w:val="Subtitle"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:after="180"/></w:pPr><w:rPr><w:color w:val="56677F"/><w:sz w:val="22"/></w:rPr></w:style>
+    <w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="Heading 1"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="180" w:after="80"/></w:pPr><w:rPr><w:b/><w:color w:val="163A70"/><w:sz w:val="25"/></w:rPr></w:style>
+    <w:style w:type="paragraph" w:styleId="Note"><w:name w:val="Note"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:before="120" w:after="120"/></w:pPr><w:rPr><w:i/><w:color w:val="56677F"/><w:sz w:val="18"/></w:rPr></w:style>
+  </w:styles>`;
+}
+
+function buildLessonDocxNumbering() {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:abstractNum w:abstractNumId="0"><w:multiLevelType w:val="singleLevel"/><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="•"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="720"/></w:tabs><w:ind w:left="720" w:hanging="360"/></w:pPr><w:rPr><w:rFonts w:ascii="Symbol" w:hAnsi="Symbol"/></w:rPr></w:lvl></w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num></w:numbering>`;
+}
+
+function buildLessonDocxFooter() {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:color w:val="A8AFBA"/><w:sz w:val="14"/></w:rPr><w:t>${escapeXml(copyrightNotice)}</w:t></w:r></w:p></w:ftr>`;
+}
+
+function wordSectionProperties() {
+  return `<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/><w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/><w:pgMar w:top="540" w:right="540" w:bottom="650" w:left="540" w:header="360" w:footer="360"/><w:cols w:space="720"/></w:sectPr>`;
+}
+
+function wordParagraph(text, options = {}) {
+  const style = options.style ? `<w:pStyle w:val="${options.style}"/>` : "";
+  const alignment = options.align ? `<w:jc w:val="${options.align}"/>` : "";
+  const numbering = options.bullet ? `<w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>` : "";
+  const compact = options.compact ? '<w:spacing w:before="0" w:after="0" w:line="220" w:lineRule="auto"/>' : "";
+  const pageBreakBefore = options.pageBreakBefore ? "<w:pageBreakBefore/>" : "";
+  const runProperties = `${options.bold ? "<w:b/>" : ""}${options.color ? `<w:color w:val="${options.color}"/>` : ""}${options.size ? `<w:sz w:val="${options.size}"/>` : ""}`;
+  const pieces = String(text ?? "").split("\n");
+  const runs = pieces.map((piece, index) => `${index ? "<w:br/>" : ""}<w:t xml:space="preserve">${escapeXml(piece || " ")}</w:t>`).join("");
+  return `<w:p><w:pPr>${style}${alignment}${numbering}${compact}${pageBreakBefore}</w:pPr><w:r><w:rPr>${runProperties}</w:rPr>${runs}</w:r></w:p>`;
+}
+
+function wordBullet(text) {
+  return wordParagraph(text, { bullet: true });
+}
+
+function wordPageBreak() {
+  return `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+}
+
+function wordSectionBreak(orientation = "landscape") {
+  const portrait = orientation === "portrait";
+  const size = portrait ? '<w:pgSz w:w="12240" w:h="15840"/>' : '<w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>';
+  return `<w:p><w:pPr><w:sectPr><w:footerReference w:type="default" r:id="rIdFooter" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>${size}<w:pgMar w:top="540" w:right="540" w:bottom="650" w:left="540" w:header="360" w:footer="360"/></w:sectPr></w:pPr></w:p>`;
+}
+
+function wordLabelValue(label, value) {
+  return { label, value: String(value || " ") };
+}
+
+function wordCallout(text, fill = "EAF7F6", border = "148F8B") {
+  return wordTable([[String(text || " ")]], [14760], { fill, border, minCellLines: 2 });
+}
+
+function wordResponseBox(label, lines = 4) {
+  return wordTable([[{ text: label, bold: true }], [""]], [14760], { firstRowHeader: true, headerFill: "EAF7F6", headerColor: "163A70", minCellLines: lines });
+}
+
+function wordTable(rows, widths, options = {}) {
+  const totalWidth = widths.reduce((sum, width) => sum + width, 0);
+  const grid = widths.map(width => `<w:gridCol w:w="${width}"/>`).join("");
+  const tableBorders = options.border || "B8C6D8";
+  const rowXml = rows.map((row, rowIndex) => {
+    const repeatHeader = options.firstRowHeader && rowIndex === 0 ? `<w:trPr><w:tblHeader/></w:trPr>` : "";
+    const cells = row.map((value, colIndex) => {
+      const fill = rowIndex === 0 && options.firstRowHeader
+        ? options.headerFill
+        : colIndex === 0 && options.firstColumnFill ? options.firstColumnFill : options.fill;
+      const color = rowIndex === 0 && options.firstRowHeader ? options.headerColor : undefined;
+      return wordTableCell(value, widths[colIndex] || Math.floor(totalWidth / row.length), {
+        fill, color, border: tableBorders, minCellLines: rowIndex === 0 && options.firstRowHeader ? 1 : options.minCellLines
+      });
+    }).join("");
+    return `<w:tr>${repeatHeader}${cells}</w:tr>`;
+  }).join("");
+  return `<w:tbl><w:tblPr><w:tblW w:w="${totalWidth}" w:type="dxa"/><w:tblInd w:w="0" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="100" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="100" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar><w:tblBorders><w:top w:val="single" w:sz="6" w:color="${tableBorders}"/><w:left w:val="single" w:sz="6" w:color="${tableBorders}"/><w:bottom w:val="single" w:sz="6" w:color="${tableBorders}"/><w:right w:val="single" w:sz="6" w:color="${tableBorders}"/><w:insideH w:val="single" w:sz="4" w:color="${tableBorders}"/><w:insideV w:val="single" w:sz="4" w:color="${tableBorders}"/></w:tblBorders></w:tblPr><w:tblGrid>${grid}</w:tblGrid>${rowXml}</w:tbl><w:p/>`;
+}
+
+function wordTableCell(value, width, options = {}) {
+  const shade = options.fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${options.fill}"/>` : "";
+  let content = "";
+  if (value && typeof value === "object" && value.label !== undefined) {
+    content = wordParagraph(value.label, { bold: true, color: "163A70", size: 17, compact: true }) + wordParagraph(value.value, { color: options.color, size: 20, compact: true });
+  } else {
+    const text = value && typeof value === "object" ? value.text : value;
+    const bold = Boolean(value && typeof value === "object" && value.bold);
+    content = wordParagraph(text || " ", { bold, color: options.color, size: 18, compact: true });
+  }
+  const extraLines = Math.max(0, Number(options.minCellLines || 1) - 1);
+  if (extraLines) content += wordParagraph(Array.from({ length: extraLines + 1 }, () => " ").join("\n"), { size: 18, compact: true });
+  return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/><w:vAlign w:val="center"/>${shade}</w:tcPr>${content}</w:tc>`;
+}
+
+function makeLessonPlanPdfLegacy(item) {
   const pdf = createPdfWriter({ width: 792, height: 612 });
   const accent = "1F5C5C";
   const lightAccent = "EAF2F2";
@@ -1881,6 +2493,10 @@ function makeLessonPlanPdf(item) {
   return pdf.toBlob();
 }
 
+function makeLessonPlanPdf(item) {
+  return makeLessonPlanPdfLegacy(item);
+}
+
 function buildTemplateSegments(item) {
   const strategyList = item.strategies?.length ? item.strategies : item.systems?.filter(system => system !== "IEP Supports") || [];
   const supportList = item.supportInserts?.length
@@ -1894,41 +2510,42 @@ function buildTemplateSegments(item) {
   const cerSelected = selectedSystems.includes("CER");
   const evidenceStrategy = strategyList.find(strategy => /claim|evidence|reason/i.test(strategy));
   const finalStrategy = evidenceStrategy && cerSelected ? evidenceStrategy : (strategyList[2] || secondaryStrategy || primaryStrategy);
+  const learningPlan = item.learningStylePlan || buildClassLearningStylePlan(item.classProfile || getClassProfileSnapshot(item.classId || appState.activePeriod));
   return [
     {
       segment: "Hook & Background Building",
       teacher: context.hook,
       student: "Activate prior knowledge, notice key details, and make an initial prediction or connection.",
       language: `Preview vocabulary: ${context.language || item.keywords?.slice(0, 5).join(", ") || "content vocabulary"}.`,
-      integration: `${primaryStrategy} (${strategyIntegrationLabel(primaryStrategy, selectedSystems)}). Give the teacher exact launch language and a visible anchor before directions.`
+      integration: `${primaryStrategy} (${strategyIntegrationLabel(primaryStrategy, selectedSystems)}). ${learningPlan.moves.hook}`
     },
     {
       segment: "Direct Teach (I do)",
       teacher: context.directTeach,
       student: "Track the model, annotate or sketch the key step, and rehearse one academic phrase.",
       language: `Teacher language: "Watch for ___." / "I know I am successful when ___."`,
-      integration: `${supportList[0]}`
+      integration: `${learningPlan.moves.directTeach} ${supportList[0]}`
     },
     {
       segment: "Guided Work (We do)",
       teacher: context.guidedPractice,
       student: "Work with a partner or small group to sort, discuss, or apply evidence to the shared task.",
       language: "Require students to say the evidence before writing it. Capture one shared response.",
-      integration: `${secondaryStrategy} (${strategyIntegrationLabel(secondaryStrategy, selectedSystems)}). Add teacher check-in for students needing support.`
+      integration: `${secondaryStrategy} (${strategyIntegrationLabel(secondaryStrategy, selectedSystems)}). ${learningPlan.moves.guidedPractice}`
     },
     {
       segment: "Independent Work (You do)",
       teacher: context.independentPractice,
       student: "Complete the task using the model, sentence frame, organizer, and evidence gathered during guided work.",
       language: cerSelected ? "Students write or present using claim, evidence, and explanation language." : "Students write or present using source, detail, and explanation language.",
-      integration: `${finalStrategy} (${strategyIntegrationLabel(finalStrategy, selectedSystems)}). ${supportList[1] || supportList[0]}`
+      integration: `${finalStrategy} (${strategyIntegrationLabel(finalStrategy, selectedSystems)}). ${learningPlan.moves.independentPractice} ${supportList[1] || supportList[0]}`
     },
     {
       segment: "Wrap-Up & Check",
       teacher: context.assessment,
       student: "Submit an exit response, explain one piece of evidence, or reflect on the strategy that helped most.",
       language: cerSelected ? "Board-ready closure: Today I learned ___ because the evidence showed ___." : "Board-ready closure: Today I learned ___ from the source detail ___. This matters because ___.",
-      integration: `${supportList[2] || "Offer a short break or reduced-response option when appropriate. (IEP)"}`
+      integration: `${learningPlan.moves.assessment} ${supportList[2] || "Offer a short break or reduced-response option when appropriate. (IEP)"}`
     }
   ];
 }
@@ -1936,7 +2553,8 @@ function buildTemplateSegments(item) {
 function buildGroupingText(item) {
   const strategies = item.strategies?.join(", ") || "teacher-selected strategies";
   const context = item.lessonContext || inferLessonContext(item.lessonText || item.title || getAnalyzableLessonText());
-  return `${context.grouping} Use ${strategies} where they fit the class profile and task.`;
+  const learningPlan = item.learningStylePlan || buildClassLearningStylePlan(item.classProfile || getClassProfileSnapshot(item.classId || appState.activePeriod));
+  return `${context.grouping} Use ${strategies} while prioritizing ${learningPlan.primary.name} (${learningPlan.primary.percent}%) and ${learningPlan.secondary.name} (${learningPlan.secondary.percent}%) access pathways.`;
 }
 
 function buildAssessmentEvidenceText(item) {
@@ -1949,7 +2567,8 @@ function buildDifferentiationText(item) {
     ? item.supportInserts.map(support => support.insert).join(" ")
     : "Apply selected IEP supports only where they are used in the lesson.";
   const organizers = item.organizers?.length ? `Attach or offer: ${item.organizers.join(", ")}.` : "";
-  return `${supports} ${organizers}`.trim();
+  const learningPlan = item.learningStylePlan || buildClassLearningStylePlan(item.classProfile || getClassProfileSnapshot(item.classId || appState.activePeriod));
+  return `${learningPlan.summary} ${learningPlan.priorities.join(" ")} ${supports} ${organizers}`.trim();
 }
 
 function drawFieldTable(pdf, x, y, width, height, fields, options) {

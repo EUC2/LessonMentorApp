@@ -1,8 +1,8 @@
 (function () {
   const portalPaths = {
-    teacher: "/teacher/",
-    school_admin: "/school/",
-    owner_admin: "/admin/"
+    teacher: "/",
+    school_admin: "/",
+    owner_admin: "/euc2admin/"
   };
 
   function normalizeRoles(profile, user) {

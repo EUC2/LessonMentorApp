@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Owner Sign In | Lesson Mentor</title>
+    <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
+    <link rel="stylesheet" href="/styles.css?v=entry-auth-20260815">
+  </head>
+  <body class="portal-login-page owner-login-page">
+    <main class="login-shell">
+      <section class="login-card">
+        <div class="landing-brand">
+          <img class="brand-logo-image" src="/assets/lessonmentor-logo.png" alt="Lesson Mentor logo">
+          <span><strong>Lesson Mentor</strong><small>EUC2 Owner Administration</small></span>
+        </div>
+        <h1>Owner Sign In</h1>
+        <p>This private portal requires an authenticated Lesson Mentor owner account.</p>
+        <form class="login-form" data-auth-form data-required-roles="owner_admin" data-redirect="/euc2admin/dashboard.html">
+          <label>Email <input name="email" type="email" autocomplete="email" required></label>
+          <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+          <button class="primary-button login-link" type="submit" data-auth-submit disabled>Open Mentor 360</button>
+          <p class="auth-status" data-auth-status aria-live="polite">Checking secure login...</p>
+        </form>
+      </section>
+    </main>
+    <footer class="site-footer">Lesson Mentor is a product of <a href="https://educationunderconstruction.com" target="_blank" rel="noopener">Education Under Construction</a>.</footer>
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabaseClient.js"></script>
+    <script src="/auth.js?v=entry-auth-20260815"></script>
+  </body>
+</html>

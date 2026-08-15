@@ -2082,6 +2082,80 @@ body.is-mobile-device .mobile-use-warning p {
   color: var(--muted);
 }
 
+.landing-auth {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.portal-role-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(86px, 1fr));
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #eef3f9;
+}
+
+.portal-role-toggle button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #40506a;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.portal-role-toggle button.is-active {
+  background: #0f4fb8;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(15, 79, 184, 0.2);
+}
+
+.landing-auth-form {
+  display: grid;
+  grid-template-columns: minmax(160px, 210px) minmax(130px, 170px) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.landing-auth-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.landing-auth-form .primary-button {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.landing-auth-status {
+  grid-column: 1 / -1;
+  min-height: 0;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.landing-auth-status:empty {
+  display: none;
+}
+
+[data-auth-state="checking"] #admin-dashboard,
+[data-auth-state="unauthenticated"] #admin-dashboard {
+  display: none !important;
+}
+
 .landing-links {
   display: flex;
   gap: 8px;
@@ -3410,7 +3484,7 @@ body.is-mobile-device .mobile-use-warning p {
 }
 
 .landing-band .portal-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .landing-band > div > p {
@@ -3544,6 +3618,20 @@ body.is-mobile-device .mobile-use-warning p {
 
   .landing-nav {
     flex-direction: column;
+  }
+
+  .landing-auth {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .landing-auth-form {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-auth-status {
+    grid-column: 1;
   }
 
   .feature-gallery {

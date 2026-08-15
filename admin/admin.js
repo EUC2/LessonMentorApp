@@ -133,9 +133,11 @@
       return;
     }
     const session = await api.getSessionProfile();
-    const roles = Array.isArray(session.profile?.roles) ? session.profile.roles : [];
+    const profileRoles = Array.isArray(session.profile?.roles) ? session.profile.roles : [];
+    const metadataRoles = Array.isArray(session.user?.app_metadata?.roles) ? session.user.app_metadata.roles : [];
+    const roles = [...new Set([...profileRoles, ...metadataRoles])];
     if (!session.user || !roles.includes("owner_admin")) return;
-    byId("admin-login-view").hidden = true;
+    if (byId("admin-login-view")) byId("admin-login-view").hidden = true;
     byId("admin-dashboard").hidden = false;
     await loadAccounts();
   }

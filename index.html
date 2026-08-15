@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lesson Mentor</title>
     <link rel="icon" type="image/png" href="/assets/lessonmentor-favicon.png">
-    <link rel="stylesheet" href="styles.css?v=live13">
+    <link rel="stylesheet" href="styles.css?v=entry-auth-20260815">
   </head>
   <body class="landing-page">
     <header class="landing-nav">
@@ -16,12 +16,18 @@
           <small>Built by a teacher, for teachers</small>
         </span>
       </a>
-      <nav class="landing-links" aria-label="Portal links">
-        <a href="/teacher/">Teacher Login</a>
-        <a href="/student/">Student Login</a>
-        <a href="/school/">School Login</a>
-        <a href="/admin/">Admin</a>
-      </nav>
+      <div class="landing-auth" aria-label="Teacher or school sign in">
+        <div class="portal-role-toggle" role="group" aria-label="Choose portal">
+          <button class="is-active" type="button" data-landing-role="teacher" aria-pressed="true">Teacher</button>
+          <button type="button" data-landing-role="school_admin" aria-pressed="false">School</button>
+        </div>
+        <form class="landing-auth-form" data-auth-form data-required-roles="teacher" data-redirect="/teacher/dashboard.html">
+          <label><span class="sr-only">Email</span><input name="email" type="email" placeholder="Email" autocomplete="email" required></label>
+          <label><span class="sr-only">Password</span><input name="password" type="password" placeholder="Password" autocomplete="current-password" required></label>
+          <button class="primary-button" type="submit" data-auth-submit disabled>Sign In</button>
+          <p class="auth-status landing-auth-status" data-auth-status aria-live="polite">Checking secure login...</p>
+        </form>
+      </div>
     </header>
 
     <main>
@@ -292,18 +298,37 @@
 
       <section class="landing-band-block landing-band">
         <div>
-          <p class="eyebrow">Portals</p>
-          <h2>Each Role Gets The Tools They Need</h2>
-          <p>Access rights decide what a user sees after login. A teacher sees teacher tools. A team lead or school user can receive school-level access. Owner admin stays separate for full account management.</p>
+          <p class="eyebrow">Access</p>
+          <h2>Purpose-Built Access For Teachers And Schools</h2>
+          <p>Teachers receive classroom planning and assessment tools. School accounts support setup, roster administration, and school-level management.</p>
         </div>
         <div class="portal-grid">
-          <a class="portal-card" href="/teacher/"><strong>Teacher</strong><span>Lesson generation, class setup, student profiles, assessment launch.</span></a>
-          <a class="portal-card" href="/student/"><strong>Student</strong><span>ID-based assessment flow with badge choice and read-aloud support.</span></a>
-          <a class="portal-card" href="/school/"><strong>School</strong><span>School-level setup, FERPA-safe roster support, shared library access.</span></a>
-          <a class="portal-card" href="/admin/"><strong>Owner Admin</strong><span>Manage teacher accounts, school accounts, billing, libraries, and system settings.</span></a>
+          <article class="portal-card"><strong>Teacher</strong><span>Lesson generation, class setup, student profiles, and assessment launch.</span></article>
+          <article class="portal-card"><strong>School</strong><span>School-level setup, FERPA-conscious roster support, and shared library access.</span></article>
         </div>
       </section>
     </main>
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabaseClient.js"></script>
+    <script>
+      const landingAuthForm = document.querySelector(".landing-auth-form");
+      document.querySelectorAll("[data-landing-role]").forEach(button => {
+        button.addEventListener("click", () => {
+          const role = button.dataset.landingRole;
+          document.querySelectorAll("[data-landing-role]").forEach(item => {
+            const active = item === button;
+            item.classList.toggle("is-active", active);
+            item.setAttribute("aria-pressed", String(active));
+          });
+          landingAuthForm.dataset.requiredRoles = role;
+          landingAuthForm.dataset.redirect = role === "school_admin"
+            ? "/teacher/dashboard.html#admin-view"
+            : "/teacher/dashboard.html";
+        });
+      });
+    </script>
+    <script src="/auth.js?v=entry-auth-20260815"></script>
     <script>
       const gallery = document.querySelector(".feature-gallery");
       if (gallery) {
